@@ -1,0 +1,290 @@
+.floating-call-widget {
+    z-index: 10000;
+    background: #2d3748;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    user-select: none;
+
+    &:hover {
+        box-shadow: 0 24px 72px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+
+    &.minimized {
+        width: 280px;
+        height: auto;
+    }
+
+    &.normal {
+        width: 420px;
+        min-height: 520px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &.fullscreen {
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        
+        .call-header {
+            padding: 20px 24px;
+        }
+        
+        .call-video-area {
+            min-height: calc(100vh - 200px);
+        }
+    }
+
+    .call-header {
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        padding: 16px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+
+        .call-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            color: white;
+            flex: 1;
+
+            .call-status {
+                font-size: 16px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .caller-name {
+                font-size: 13px;
+                font-weight: 400;
+                opacity: 0.9;
+                text-transform: capitalize;
+            }
+        }
+        
+        .window-controls {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            
+            .control-btn {
+                width: 32px;
+                height: 32px;
+                background: rgba(255, 255, 255, 0.1);
+                border: none;
+                border-radius: 6px;
+                color: white;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                transition: all 0.2s;
+                
+                &:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    transform: scale(1.05);
+                }
+                
+                &.minimize {
+                    &:hover {
+                        background: rgba(59, 130, 246, 0.3);
+                    }
+                }
+                
+                &.fullscreen {
+                    &:hover {
+                        background: rgba(16, 185, 129, 0.3);
+                    }
+                }
+                
+                &.close {
+                    &:hover {
+                        background: rgba(239, 68, 68, 0.3);
+                    }
+                }
+            }
+        }
+
+        .call-mode-controls {
+            display: flex;
+            gap: 6px;
+
+            .mode-btn {
+                background: transparent;
+                border: none;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                padding: 4px 8px;
+                border-radius: 4px;
+                transition: background 0.2s;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+    }
+
+    .call-video-area {
+        position: relative;
+        width: 100%;
+        flex: 1;
+        min-height: 320px;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .remote-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .local-video {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid white;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        // Avatar placeholder when no video
+        .call-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    &.fullscreen .call-video-area {
+        height: calc(100% - 120px);
+
+        .local-video {
+            width: 200px;
+            height: 150px;
+            bottom: 20px;
+            right: 20px;
+        }
+    }
+
+    .call-controls {
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        min-height: 100px;
+
+        .call-btn {
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: visible;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+            &:hover {
+                transform: scale(1.1);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+
+            &:active {
+                transform: scale(1.05);
+            }
+
+            &.answer-btn {
+                background: #10b981;
+                color: white;
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+
+                &:hover {
+                    background: #059669;
+                }
+            }
+
+            &.reject-btn {
+                background: #ef4444;
+                color: white;
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+
+                &:hover {
+                    background: #dc2626;
+                }
+            }
+            
+            &.hangup-btn {
+                background: #ef4444;
+                color: white;
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+
+                &:hover {
+                    background: #dc2626;
+                }
+            }
+
+            &:not(.answer-btn):not(.reject-btn):not(.hangup-btn) {
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                backdrop-filter: blur(10px);
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.25);
+                }
+
+                &.active {
+                    background: #ef4444;
+                }
+            }
+        }
+    }
+
+    &.minimized .call-controls {
+        padding: 12px;
+
+        .call-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+    }
+}
+

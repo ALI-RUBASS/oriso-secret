@@ -1,0 +1,1 @@
+[ 'application_settings', 'consulting_types' ]

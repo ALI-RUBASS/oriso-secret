@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Service Health Dashboard</title>
+    <style>
+      body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; background: #0b1220; color: #e6edf3; }
+      .layout { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+      .sidebar { background: #0f1a2a; border-right: 1px solid #1f2d3d; padding: 16px; overflow-y: auto; }
+      .brand { font-weight: 700; font-size: 18px; margin-bottom: 16px; color: #6ab7ff; }
+      .svc { display: flex; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 8px; cursor: pointer; color: #c9d1d9; }
+      .svc:hover { background: #13233a; }
+      .svc.active { background: #163052; }
+      .status-dot { width: 10px; height: 10px; border-radius: 999px; }
+      .main { padding: 24px; overflow-y: auto; }
+      .card { background: #0f1a2a; border: 1px solid #1f2d3d; border-radius: 12px; padding: 20px; }
+      .title { font-size: 20px; font-weight: 700; margin: 0 0 8px; }
+      .muted { color: #8b949e; font-size: 12px; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px; }
+      .pill { display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; font-weight:600; }
+      .pill.ok { background:#072b19; color:#4ae290; border:1px solid #124f2f; }
+      .pill.bad { background:#2a0f15; color:#ff7a8a; border:1px solid #5b1f2a; }
+      code { background:#0b1626; border:1px solid #1f2d3d; padding:2px 6px; border-radius:6px; }
+      a { color:#6ab7ff; }
+      table { width:100%; border-collapse: collapse; margin-top: 12px; }
+      th, td { border:1px solid #1f2d3d; padding:8px; text-align:left; font-size: 13px; }
+      th { background:#0b1626; }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">Health (Main Server)</div>
+        <div id="svc-list"></div>
+      </aside>
+      <main class="main">
+        <div class="card">
+          <div class="title" id="svc-title">Home</div>
+          <div class="muted" id="svc-url"></div>
+          <div style="margin-top:12px">
+            <span id="svc-state" class="pill" style="display:none">Unknown</span>
+          </div>
+          <div class="grid" id="svc-details"></div>
+        </div>
+      </main>
+    </div>
+    <script>
+      const listEl = document.getElementById('svc-list');
+      const titleEl = document.getElementById('svc-title');
+      const urlEl = document.getElementById('svc-url');
+      const stateEl = document.getElementById('svc-state');
+      const detailsEl = document.getElementById('svc-details');
+
+      let services = {};
+      let activeKey = null;
+
+      function statusPill(ok) {
+        stateEl.className = 'pill ' + (ok ? 'ok' : 'bad');
+        stateEl.textContent = ok ? 'UP' : 'DOWN';
+      }
+
+      function renderList() {
+        listEl.innerHTML = '';
+        // Home entry
+        const home = document.createElement('div');
+        home.className = 'svc' + (activeKey === null ? ' active' : '');
+        const hdot = document.createElement('div');
+        hdot.className = 'status-dot';
+        hdot.style.background = '#6ab7ff';
+        const hlabel = document.createElement('div');
+        hlabel.textContent = 'Home';
+        home.appendChild(hdot); home.appendChild(hlabel);
+        home.onclick = () => showHome();
+        listEl.appendChild(home);
+
+        // Cron Jobs entry
+        const cron = document.createElement('div');
+        cron.className = 'svc';
+        const cdot = document.createElement('div');
+        cdot.className = 'status-dot';
+        cdot.style.background = '#6ab7ff';
+        const clabel = document.createElement('div');
+        clabel.textContent = 'Cron Jobs';
+        cron.appendChild(cdot); cron.appendChild(clabel);
+        cron.onclick = () => showCron();
+        listEl.appendChild(cron);
+
+        Object.entries(services).forEach(([key, svc]) => {
+          const row = document.createElement('div');
+          row.className = 'svc' + (key === activeKey ? ' active' : '');
+          const dot = document.createElement('div');
+          dot.className = 'status-dot';
+          dot.style.background = '#555';
+          const label = document.createElement('div');
+          label.textContent = svc.name || key;
+          row.appendChild(dot);
+          row.appendChild(label);
+          row.onclick = () => selectService(key);
+          listEl.appendChild(row);
+
+          // prefetch status to color dots
+          fetch('/api/health/' + encodeURIComponent(key))
+            .then(r => r.json().catch(() => ({ status: 'DOWN' })))
+            .then(data => {
+              dot.style.background = (data.status === 'UP') ? '#22c55e' : '#ef4444';
+              if (key === activeKey) statusPill(data.status === 'UP');
+            })
+            .catch(() => { dot.style.background = '#ef4444'; });
+        });
+      }
+
+      function renderDetails(json) {
+        detailsEl.innerHTML = '';
+        const rows = [];
+        if (json.components) {
+          Object.entries(json.components).forEach(([k,v]) => {
+            const ok = v.status === 'UP';
+            rows.push(`<div class=\"card\"><div class=\"title\" style=\"font-size:16px\">${k}</div><div class=\"pill ${ok?'ok':'bad'}\">${v.status||'UNKNOWN'}</div></div>`);
+          });
+        } else {
+          rows.push(`<div class=\"card\"><div class=\"title\" style=\"font-size:16px\">Raw</div><pre>${escapeHtml(JSON.stringify(json, null, 2))}</pre></div>`);
+        }
+        detailsEl.innerHTML = rows.join('');
+      }
+
+      function showHome() {
+        activeKey = null;
+        titleEl.textContent = 'Home';
+        urlEl.textContent = '';
+        stateEl.style.display = 'none';
+        renderList();
+        detailsEl.innerHTML = `
+          <div class="card">
+            <div class="title" style="font-size:16px">Quick Links</div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px">
+              <a target="_blank" href="http://localhost:9000/admin/login"><button class="pill ok">Admin (9000)</button></a>
+              <a target="_blank" href="http://localhost:9001/"><button class="pill ok">Frontend (9001)</button></a>
+              <a target="_blank" href="http://localhost:8080/"><button class="pill ok">Keycloak (8080)</button></a>
+            </div>
+          </div>`;
+      }
+
+      async function showCron() {
+        activeKey = '__cron__';
+        titleEl.textContent = 'Cron Jobs';
+        urlEl.textContent = 'Runs every 60 seconds';
+        stateEl.style.display = 'none';
+        renderList();
+        const runs = await fetch('/api/cron/runs').then(r => r.json()).catch(() => []);
+        const keys = Object.keys(services);
+        const headerCols = ['Run ID', 'Timestamp', ...keys.map(k => services[k].name || k), 'Overall'];
+        let html = '<table><thead><tr>' + headerCols.map(h => `<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+        runs.slice(0,10).forEach(run => {
+          const ok = run.overall === 'ALL_UP';
+          html += '<tr>' +
+            `<td>${run.id}</td>` +
+            `<td><code>${run.timestamp}</code></td>` +
+            keys.map(k => `<td>${run.results?.[k] || 'N/A'}</td>`).join('') +
+            `<td><span class="pill ${ok?'ok':'bad'}">${ok?'✅ All Up':'⚠️ One or More Down'}</span></td>` +
+          '</tr>';
+        });
+        html += '</tbody></table>';
+        detailsEl.innerHTML = html;
+      }
+
+      function selectService(key) {
+        activeKey = key;
+        const svc = services[key];
+        titleEl.textContent = svc.name || key;
+        urlEl.textContent = svc.url;
+        stateEl.style.display = 'inline-flex';
+        statusPill(false);
+        renderList();
+        fetch('/api/health/' + encodeURIComponent(key))
+          .then(r => r.json())
+          .then(json => {
+            const ok = json.status === 'UP';
+            statusPill(ok);
+            renderDetails(json);
+          })
+          .catch(() => { statusPill(false); });
+      }
+
+      function escapeHtml(str) { return str.replace(/[&<>]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[s])); }
+
+      fetch('/api/services').then(r => r.json()).then(json => { services = json; renderList(); showHome(); });
+    </script>
+  </body>
+  </html>
+

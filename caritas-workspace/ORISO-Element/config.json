@@ -1,0 +1,32 @@
+{
+  "default_server_name": "matrix.org",
+  "default_is_url": "https://vector.im",
+  "disable_custom_homeserver": false,
+  "disable_federation": false,
+  "default_theme": "dark",
+  "brand": "Element",
+  "integrations_ui_url": "https://scalar.vector.im/",
+  "integrations_rest_url": "https://scalar.vector.im/api",
+  "integrations_widgets_urls": [
+    "https://scalar.vector.im/_matrix/integrations/v1",
+    "https://scalar.vector.im/api",
+    "https://scalar.vector.im/widgets"
+  ],
+  "bug_report_endpoint_url": "https://element.io/bugreports/submit",
+  "defaultCountryCode": "US",
+  "showLabsSettings": true,
+  "features": {
+    "feature_new_spinner": true,
+    "feature_pinning": true,
+    "feature_custom_status": true,
+    "feature_custom_tags": true,
+    "feature_state_counters": true,
+    "feature_room_count": true,
+    "feature_jump_to_date": true,
+    "feature_showcase": true,
+    "feature_communities_v2_prototypes": true,
+    "feature_dynamic_room_predecessors": true,
+    "feature_video_rooms": true,
+    "feature_element_call": true
+  }
+}

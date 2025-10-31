@@ -1,0 +1,121 @@
+
+--- Collection: application_settings ---
+[
+  {
+    v: 2,
+    key: {
+      _id: 1
+    },
+    name: '_id_'
+  }
+]
+Sample document:
+{
+  _id: ObjectId('68ee3220558dfc6594b20a9c'),
+  releaseToggles: {},
+  multitenancyWithSingleDomainEnabled: {
+    value: true,
+    readOnly: true
+  },
+  multitenancyEnabled: {
+    value: false,
+    readOnly: true
+  },
+  useTenantService: {
+    value: true,
+    readOnly: false
+  },
+  useConsultingTypesForAgencies: {
+    value: false,
+    readOnly: false
+  },
+  enableWalkthrough: {
+    value: false,
+    readOnly: false
+  },
+  disableVideoAppointments: {
+    value: true,
+    readOnly: false
+  },
+  mainTenantSubdomainForSingleDomainMultitenancy: {
+    value: 'localhost',
+    readOnly: false
+  },
+  useOverviewPage: {
+    value: false,
+    readOnly: false
+  },
+  calcomUrl: {
+    value: 'calcomUrl',
+    readOnly: false
+  },
+  budibaseAuthClientId: {
+    value: 'budibaseAuthClientId',
+    readOnly: false
+  },
+  budibaseUrl: {
+    value: 'budibaseUrl',
+    readOnly: false
+  },
+  calendarAppUrl: {
+    value: 'calendarAppUrl',
+    readOnly: false
+  },
+  legalContentChangesBySingleTenantAdminsAllowed: {
+    value: true,
+    readOnly: false
+  },
+  documentationEnabled: {
+    value: false,
+    readOnly: true
+  },
+  _class: 'de.caritas.cob.consultingtypeservice.api.model.ApplicationSettingsEntity'
+}
+
+--- Collection: consulting_types ---
+[
+  {
+    v: 2,
+    key: {
+      _id: 1
+    },
+    name: '_id_'
+  }
+]
+Sample document:
+{
+  _id: 1,
+  groups: [],
+  slug: 'consultingtype1',
+  excludeNonMainConsultantsFromTeamSessions: false,
+  lockedAgencies: false,
+  consultantBoundedToConsultingType: false,
+  sendFurtherStepsMessage: true,
+  sendSaveSessionDataMessage: true,
+  initializeFeedbackChat: false,
+  isPeerChat: false,
+  languageFormal: true,
+  roles: {
+    consultant: {
+      defaultRole: [
+        'consultant'
+      ]
+    }
+  },
+  registration: {
+    minPostcodeSize: 5,
+    autoSelectAgency: false,
+    autoSelectPostcode: false,
+    notes: {},
+    mandatoryFields: {
+      age: false,
+      state: false
+    }
+  },
+  urls: {},
+  showAskerProfile: false,
+  isVideoCallAllowed: false,
+  isSubsequentRegistrationAllowed: false,
+  isAnonymousConversationAllowed: false,
+  _class: 'de.caritas.cob.consultingtypeservice.api.model.ConsultingTypeEntity'
+}

@@ -1,0 +1,35 @@
+.header {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	flex-wrap: wrap;
+	background-color: $white;
+	height: $header-height;
+	flex: 0 0 $header-height;
+	width: 100%;
+	padding: 0 $grid-base-three;
+
+	.headline {
+		margin-bottom: 0;
+	}
+
+	@include breakpoint($fromSmall) {
+		flex-direction: row;
+		justify-content: space-between;
+		flex-wrap: nowrap;
+	}
+
+	&__right {
+		display: flex;
+		align-items: center;
+	}
+
+	&__logo {
+		max-width: 240px;
+		max-height: 60px;
+		object-fit: contain;
+		object-position: center right;
+		margin-right: 10px;
+	}
+}
