@@ -18,7 +18,7 @@
     "welcomeMessageText": "Lorem ipsum"
   },
   "sendFurtherStepsMessage": true,
-  "isVideoCallAllowed": false,
+  "isVideoCallAllowed": true,
   "sessionDataInitializing": {
     "addictiveDrugs": true,
     "age": true,

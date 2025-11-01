@@ -29,20 +29,20 @@ ENV PORT=$PORT
 #RUN npm install --ignore-scripts
 #RUN npm run build
 
-# Prod build - static server
+# Prod build
 FROM node:$NODE_VERSION
 
 ARG PORT=80
 
 USER node
 WORKDIR /app
+EXPOSE $PORT
+COPY --from=proxyBuild /app ./
 COPY build /app/build
-COPY package.json /app/package.json
-COPY proxy /app/proxy
 
 ENV NODE_ENV=production
 ENV PORT=$PORT
 
-RUN npm install --production --ignore-scripts
+RUN npm ci --ignore-scripts
 
 CMD ["npm", "run", "start"]

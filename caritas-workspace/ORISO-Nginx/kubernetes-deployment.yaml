@@ -31,7 +31,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -58,7 +58,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -80,7 +80,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -102,7 +102,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -123,7 +123,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -145,7 +145,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -168,7 +168,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -190,7 +190,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -212,7 +212,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Allow-Max-Age' 86400 always;
                 return 204;
@@ -236,7 +236,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -259,7 +259,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -315,7 +315,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -337,7 +337,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -359,7 +359,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
@@ -403,7 +403,7 @@ data:
                 add_header 'Access-Control-Allow-Origin' $http_origin always;
                 add_header 'Vary' 'Origin' always;
                 add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
-                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-Requested-With, X-WHITELIST-HEADER' always;
+                add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type, Cache-Control, Pragma, Expires, X-CSRF-Token, x-csrf-token, X-CSRF-Bypass, x-csrf-bypass, X-Requested-With, X-WHITELIST-HEADER' always;
                 add_header 'Access-Control-Allow-Credentials' 'true' always;
                 add_header 'Access-Control-Max-Age' 86400 always;
                 return 204;
