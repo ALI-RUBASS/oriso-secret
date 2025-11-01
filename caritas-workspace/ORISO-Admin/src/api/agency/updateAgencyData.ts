@@ -37,7 +37,7 @@ export const updateAgencyData = async (agencyModel: AgencyData, formInput: Agenc
         city: formInput.city,
         consultingType: consultingTypeId,
         teamAgency: formInput.teamAgency,
-        offline: formInput.offline,
+        offline: !formInput.online, // Convert from 'online' form field to 'offline' API field
         external: false,
         demographics: formInput.demographics,
         counsellingRelations: formInput.counsellingRelations,

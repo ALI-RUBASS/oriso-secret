@@ -200,8 +200,16 @@ public class AgencyAdminService {
    * @return an {@link AgencyAdminFullResponseDTO} instance
    */
   public AgencyAdminFullResponseDTO updateAgency(Long agencyId, UpdateAgencyDTO updateAgencyDTO) {
+    System.out.println("=== UPDATE AGENCY DEBUG ===");
+    System.out.println("Received offline value: " + updateAgencyDTO.getOffline());
+    System.out.println("Agency ID: " + agencyId);
+    
     var agency = agencyRepository.findById(agencyId).orElseThrow(NotFoundException::new);
+    System.out.println("Current DB offline value: " + agency.isOffline());
+    
     var updatedAgency = agencyRepository.save(mergeAgencies(agency, updateAgencyDTO));
+    System.out.println("After merge offline value: " + updatedAgency.isOffline());
+    
     enrichWithAgencyTopicsIfTopicFeatureEnabled(updatedAgency);
     this.appointmentService.syncAgencyDataToAppointmentService(updatedAgency);
     agencyRepository.flush();

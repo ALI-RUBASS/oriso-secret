@@ -57,9 +57,11 @@ public class AgencyPostcodeRangeAdminService {
    */
   @Transactional
   public void deleteAgencyPostcodeRange(Long agencyId) {
-    if (!multitenancy) {
-      markAgencyOffline(agencyId);
-    }
+    // Don't auto-disable agency when ranges are deleted
+    // The offline status should be controlled explicitly via agency update
+    // if (!multitenancy) {
+    //   markAgencyOffline(agencyId);
+    // }
     this.agencyPostCodeRangeRepository.deleteAllByAgencyId(agencyId);
   }
 

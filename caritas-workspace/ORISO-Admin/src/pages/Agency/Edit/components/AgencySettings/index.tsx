@@ -44,15 +44,31 @@ export const AgencySettings = ({ isEditMode }: AgencySettingsProps) => {
     );
 
     useEffect(() => {
+        // Load dioceses and consulting types only if feature flag enabled
         if (isEnabled(FeatureFlag.ConsultingTypesForAgencies)) {
-            getConsultingTypes().then((cTypes) => setConsultingTypes(cTypes));
-            getDiocesesData().then((dioceses) => setDiocesesData(dioceses));
+            getConsultingTypes()
+                .then((cTypes) => setConsultingTypes(cTypes))
+                .catch((error) => {
+                    console.error('Failed to load consulting types:', error);
+                    setConsultingTypes([]);
+                });
+            getDiocesesData()
+                .then((dioceses) => setDiocesesData(dioceses))
+                .catch((error) => {
+                    console.error('Failed to load dioceses:', error);
+                    setDiocesesData([]);
+                });
         }
 
         if (isSuperAdmin) {
-            searchTenantData({ perPage: 1000 }).then(({ data }) => setTenantsData(data));
+            searchTenantData({ perPage: 1000 })
+                .then(({ data }) => setTenantsData(data))
+                .catch((error) => {
+                    console.error('Failed to load tenants:', error);
+                    setTenantsData([]);
+                });
         }
-    }, []);
+    }, [isSuperAdmin, isEnabled]);
 
     return (
         <Card isLoading={isLoadingTopics} titleKey="agency.edit.settings.title">
@@ -67,7 +83,8 @@ export const AgencySettings = ({ isEditMode }: AgencySettingsProps) => {
                 />
             )}
 
-            {isEnabled(FeatureFlag.Topics) && topics?.length > 0 && (
+            {/* Topics - ALWAYS VISIBLE (no feature flag) */}
+            {topics?.length > 0 && (
                 <SelectFormField
                     label="topics.title"
                     name="topicIds"
@@ -78,6 +95,8 @@ export const AgencySettings = ({ isEditMode }: AgencySettingsProps) => {
                     options={convertToOptions(topicsForList, 'name', 'id')}
                 />
             )}
+
+            {/* Diocese - HIDDEN (feature flag required) */}
             {isEnabled(FeatureFlag.ConsultingTypesForAgencies) && (
                 <SelectFormField
                     label="agency.edit.general.more_settings.diocese.title"
@@ -86,14 +105,21 @@ export const AgencySettings = ({ isEditMode }: AgencySettingsProps) => {
                     options={convertToOptions(diocesesData, ['id', 'name'], 'id')}
                 />
             )}
+
+            {/* Consulting Type - HIDDEN (feature flag required) */}
             {isEnabled(FeatureFlag.ConsultingTypesForAgencies) && (
                 <SelectFormField
                     label="agency"
                     name="consultingType"
                     placeholder="plsSelect"
-                    options={convertToOptions(consultingTypes, ['id', 'titles.default'], 'id')}
+                    options={consultingTypes.map((ct) => ({
+                        value: String(ct.id || ''),
+                        label: String(ct.titles?.default || ct.id || 'Unknown'),
+                    }))}
                 />
             )}
+
+            {/* Demographics - HIDDEN (feature flag required) */}
             {isEnabled(FeatureFlag.Demographics) && (
                 <>
                     <SliderFormField
@@ -118,6 +144,7 @@ export const AgencySettings = ({ isEditMode }: AgencySettingsProps) => {
                 </>
             )}
 
+            {/* Counselling Relations - HIDDEN (release toggle required) */}
             {isReleaseToggleEnabled(ReleaseToggle.COUNSELLING_RELATIONS) && (
                 <SelectFormField
                     required

@@ -11,14 +11,13 @@ function buildAgencyDataRequestBody(
 ) {
     const topics = formData?.topicIds || formData?.topics;
     const topicIds = topics
-        ?.map((topic) => (typeof topic === 'string' ? topic : topic?.id))
-        .filter((id) => !Number.isNaN(Number(id)));
-    return JSON.stringify({
+        ?.map((topic) => (typeof topic === 'string' ? topic : topic?.value || topic?.id))
+        .filter((id) => id != null && !Number.isNaN(Number(id)));
+    const requestBody: any = {
         // diocese in case of SAAS is not relevant object but enforced by API
         // dioceseId: formData.dioceseId ? parseInt(formData.dioceseId, 10) : 0,
         name: formData.name,
         description: formData.description ? formData.description : '',
-        topicIds: topicIds || [],
         postcode: formData.postcode,
         city: formData.city,
         consultingType: consultingTypeResponseId,
@@ -26,12 +25,23 @@ function buildAgencyDataRequestBody(
         // enforced by admin API, without business value for SAAS
         external: false,
         offline: formData.offline,
-        demographics: formData.demographics || {},
-        counsellingRelations: formData.counsellingRelations || [],
         dataProtection: formData.dataProtection || { agreement: true, agreementDate: new Date().toISOString() },
         tenantId,
         agencyLogo: formData.agencyLogo || '',
-    });
+    };
+
+    // Only include optional fields if they have values
+    if (topicIds && topicIds.length > 0) {
+        requestBody.topicIds = topicIds;
+    }
+    if (formData.demographics && Object.keys(formData.demographics).length > 0) {
+        requestBody.demographics = formData.demographics;
+    }
+    if (formData.counsellingRelations && formData.counsellingRelations.length > 0) {
+        requestBody.counsellingRelations = formData.counsellingRelations;
+    }
+
+    return JSON.stringify(requestBody);
 }
 
 async function createAgency(agencyDataRequestBody: string) {
