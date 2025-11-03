@@ -1615,7 +1615,18 @@
 			"headline": "Choose consulting center",
 			"preselected": {
 				"prefix": "Your pre-selected counseling center: "
-			}
+			},
+			"result": {
+				"external": {
+					"headline": "The counseling center found uses a different application for counseling",
+					"link": "Switch now",
+					"subline": "Please try a different postal code or visit our website to find a counseling center near you."
+				},
+				"headline": "Counseling centers for postal code",
+				"languages": "This counseling center advises you in:"
+			},
+			"search": "Search for a postal code",
+			"summary": "Your counseling center:"
 		},
 		"agencyPreselected": {
 			"headline": "Please enter your postal code",
@@ -1751,12 +1762,54 @@
 				"16": "Thuringia"
 			}
 		},
+		"stepbar": {
+			"of": "of",
+			"step": "Step"
+		},
 		"submitButton": {
 			"label": "Register"
 		},
 		"teaser": {
 			"consultant": "Please register to get in touch with your consultant"
 		},
+		"topic": {
+			"headline": "What topic are you looking for advice on?",
+			"infoOverlay": {
+				"backButtonLabel": "Select another topic",
+				"nextButtonLabel": "Select topic and continue"
+			},
+			"oneResult": "We advise you on the topic",
+			"subline": "Choose a topic from our counseling services.",
+			"summary": "Your topic:"
+		},
+		"account": {
+			"headline": "Capture login data",
+			"password": {
+				"criteria1": "at least 9 characters",
+				"criteria2": "at least one number",
+				"criteria3": "Upper/lower case",
+				"criteria4": "at least one special character",
+				"label": "Password"
+			},
+			"repeatPassword": {
+				"error": "Your password is not identical.",
+				"label": "Repeat password",
+				"success": "Your password is identical."
+			},
+			"subline": "To protect your anonymity, we advise you not to use your real name or initials.",
+			"username": {
+				"error": {
+					"available": "Your username is too short.",
+					"unavailable": "This username is already taken."
+				},
+				"hint": "5 or more characters",
+				"label": "Username",
+				"success": "Your username is available."
+			}
+		},
+		"back": "Back",
+		"next": "Next",
+		"register": "Register",
 		"title": {
 			"start": "Registration"
 		},
@@ -1791,7 +1844,18 @@
 				"buttonLabel": "Register",
 				"helperText": "Not registered yet?"
 			},
-			"subline": "How does Caritas Counseling & Assistance work?"
+			"subline": "How does Caritas Counseling & Assistance work?",
+			"login": {
+				"buttonLabel": "Login",
+				"helperText": "Already registered?"
+			}
+		},
+		"zipcode": {
+			"bullet1": "• know the help available around your place of residence",
+			"bullet2": "• know the laws of your federal state",
+			"headline": "To be able to advise you as best as possible, we need your postcode",
+			"label": "Your postcode",
+			"subline": "Why? Because then our specialists:"
 		}
 	},
 	"releaseNote": {
