@@ -1,10 +1,15 @@
 {
-  "default_server_name": "matrix.org",
-  "default_is_url": "https://vector.im",
+  "default_server_config": {
+    "m.homeserver": {
+      "base_url": "http://91.99.219.182:8008",
+      "server_name": "91.99.219.182"
+    }
+  },
+  "default_server_name": "91.99.219.182",
   "disable_custom_homeserver": false,
-  "disable_federation": false,
+  "disable_federation": true,
   "default_theme": "dark",
-  "brand": "Element",
+  "brand": "Consulting & Help - Element",
   "integrations_ui_url": "https://scalar.vector.im/",
   "integrations_rest_url": "https://scalar.vector.im/api",
   "integrations_widgets_urls": [
@@ -13,7 +18,7 @@
     "https://scalar.vector.im/widgets"
   ],
   "bug_report_endpoint_url": "https://element.io/bugreports/submit",
-  "defaultCountryCode": "US",
+  "defaultCountryCode": "DE",
   "showLabsSettings": true,
   "features": {
     "feature_new_spinner": true,
@@ -28,5 +33,6 @@
     "feature_dynamic_room_predecessors": true,
     "feature_video_rooms": true,
     "feature_element_call": true
-  }
+  },
+  "map_style_url": "https://api.maptiler.com/maps/streets/style.json?key=YOUR_MAPTILER_KEY"
 }

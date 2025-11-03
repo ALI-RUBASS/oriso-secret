@@ -54,6 +54,10 @@
 		},
 		"successful": "Successful",
 		"title": "Consulting & Help",
+		"ui": {
+			"classic": "Classic Look",
+			"new": "New Look!"
+		},
 		"wait": "Please wait"
 	},
 	"appointments": {

@@ -26,7 +26,7 @@
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'none';
         style-src 'self' 'unsafe-inline' ;
-        script-src 'self' 'wasm-unsafe-eval' https://www.recaptcha.net/recaptcha/ https://www.gstatic.com/recaptcha/ ;
+        script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.recaptcha.net/recaptcha/ https://www.gstatic.com/recaptcha/ ;
         img-src * blob: data:;
         connect-src * blob:;
         font-src 'self' data: ;
@@ -77,6 +77,65 @@
   <body style="height: 100%; margin: 0;">
     <noscript>Sorry, Element requires JavaScript to be enabled.</noscript> <!-- TODO: Translate this? -->
     <div id="matrixchat" style="height: 100%;" class="notranslate"></div>
+
+    <!-- AUTO-LOGIN SCRIPT: MUST run BEFORE Element bundle loads! -->
+    <script>
+        (function() {
+            console.log('🔷 Element Auto-Login Script Starting...');
+            
+            // Function to get cookie value
+            function getCookie(name) {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
+                return null;
+            }
+
+            // Check if credentials are in cookies (from Classic UI toggle)
+            const matrixUserId = getCookie('matrix_sso_user_id');
+            const matrixAccessToken = getCookie('matrix_sso_access_token');
+            const matrixDeviceId = getCookie('matrix_sso_device_id');
+            const homeserver = getCookie('matrix_sso_hs_url') || 'http://91.99.219.182:8008';
+
+            console.log('🔍 Checking for SSO credentials in cookies...');
+            console.log('   User ID:', matrixUserId || 'NOT FOUND');
+            console.log('   Token:', matrixAccessToken ? 'EXISTS (length: ' + matrixAccessToken.length + ')' : 'NOT FOUND');
+            console.log('   Device ID:', matrixDeviceId || 'NOT FOUND');
+            console.log('   Homeserver:', homeserver);
+
+            if (matrixUserId && matrixAccessToken) {
+                console.log('✅ SSO credentials found! Setting up Element session...');
+                
+                try {
+                    // Set Element's expected localStorage keys
+                    localStorage.setItem('mx_hs_url', homeserver);
+                    localStorage.setItem('mx_user_id', matrixUserId);
+                    localStorage.setItem('mx_access_token', matrixAccessToken);
+                    if (matrixDeviceId) {
+                        localStorage.setItem('mx_device_id', matrixDeviceId);
+                    }
+                    
+                    console.log('✅ Element credentials set in localStorage:');
+                    console.log('   mx_hs_url:', localStorage.getItem('mx_hs_url'));
+                    console.log('   mx_user_id:', localStorage.getItem('mx_user_id'));
+                    console.log('   mx_access_token:', localStorage.getItem('mx_access_token') ? 'SET' : 'NOT SET');
+                    
+                    // Clear SSO cookies after using them (security)
+                    document.cookie = 'matrix_sso_user_id=; path=/; max-age=0';
+                    document.cookie = 'matrix_sso_access_token=; path=/; max-age=0';
+                    document.cookie = 'matrix_sso_device_id=; path=/; max-age=0';
+                    document.cookie = 'matrix_sso_hs_url=; path=/; max-age=0';
+                    
+                    console.log('🔒 SSO cookies cleared for security');
+                    console.log('✅ Element auto-login ready! Element should load with session.');
+                } catch (e) {
+                    console.error('❌ Failed to set Element session:', e);
+                }
+            } else {
+                console.log('ℹ️  No SSO credentials in cookies (normal for direct Element access)');
+            }
+        })();
+    </script>
 
     <script src="bundles/6f661f6f3f18a5415d5a/unhomoglyph_data.js"></script>
     <script src="bundles/6f661f6f3f18a5415d5a/bundle.js"></script>

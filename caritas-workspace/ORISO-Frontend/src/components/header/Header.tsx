@@ -7,6 +7,7 @@ import './header.styles';
 import { useTranslation } from 'react-i18next';
 import { useAtomValue } from 'jotai';
 import { agencyLogoAtom } from '../../store/agencyLogoAtom';
+import { UIVersionToggle } from '../uiVersionToggle/UIVersionToggle';
 
 export const Header = () => {
 	const { t: translate } = useTranslation();
@@ -17,6 +18,7 @@ export const Header = () => {
 		<header className="header">
 			<Headline semanticLevel="2" text={translate('app.title')} />
 			<div className="header__right">
+				<UIVersionToggle />
 				{agencyLogo ? (
 					<img src={agencyLogo} className="header__logo" alt="Logo" />
 				) : (

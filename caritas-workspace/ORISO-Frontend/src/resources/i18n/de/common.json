@@ -55,6 +55,10 @@
 		},
 		"successful": "Erfolgreich",
 		"title": "Beratung",
+		"ui": {
+			"classic": "Klassisches Design",
+			"new": "Neues Design!"
+		},
 		"wait": "Bitte warten",
 		"info": "Information",
 		"or": "oder"
