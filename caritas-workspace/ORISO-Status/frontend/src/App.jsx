@@ -5,6 +5,7 @@ import Header from './components/Header'
 
 function App() {
   const [services, setServices] = useState({})
+  const [serviceStatuses, setServiceStatuses] = useState({})
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState(null)
 
@@ -21,15 +22,45 @@ function App() {
     }
   }
 
+  const fetchAllHealthStatuses = async () => {
+    if (Object.keys(services).length === 0) return
+    
+    const statuses = {}
+    await Promise.all(
+      Object.keys(services).map(async (key) => {
+        try {
+          const response = await fetch(`/api/health/${key}`)
+          if (response.ok) {
+            const data = await response.json()
+            statuses[key] = data.status
+          } else {
+            statuses[key] = 'DOWN'
+          }
+        } catch {
+          statuses[key] = 'DOWN'
+        }
+      })
+    )
+    setServiceStatuses(statuses)
+  }
+
   useEffect(() => {
     fetchServices()
     const interval = setInterval(fetchServices, 30000) // Refresh every 30s
     return () => clearInterval(interval)
   }, [])
 
-  const allOperational = Object.values(services).every(
-    (service) => service.status === 'UP'
-  )
+  useEffect(() => {
+    if (Object.keys(services).length > 0) {
+      fetchAllHealthStatuses()
+      const interval = setInterval(fetchAllHealthStatuses, 30000) // Refresh every 30s
+      return () => clearInterval(interval)
+    }
+  }, [services])
+
+  const allOperational = Object.values(serviceStatuses).every(
+    (status) => status === 'UP'
+  ) && Object.keys(serviceStatuses).length > 0
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -50,8 +50,8 @@ export default function StatusBanner({ allOperational, loading, serviceCount }) 
             allOperational ? 'text-green-900' : 'text-red-900'
           }`}>
             {allOperational 
-              ? '✅ All Systems Operational' 
-              : '⚠️ Some Systems Experiencing Issues'}
+              ? 'All Systems Operational' 
+              : 'Some Systems Experiencing Issues'}
           </h2>
           <p className={`mt-1 text-sm ${
             allOperational ? 'text-green-700' : 'text-red-700'

@@ -10,19 +10,17 @@ export default function Header() {
           </div>
           
           <div className="flex items-center space-x-6">
-            <a 
-              href="https://app.oriso.site" 
-              className="text-sm font-medium text-gray-700 hover:text-gray-900"
-            >
+            <span className="text-sm font-medium text-gray-700">
               ORISO Platform
-            </a>
-            <button
-              className="inline-flex items-center px-4 py-2 border border-gray-300 
-                rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white 
-                hover:bg-gray-50 transition-colors"
+            </span>
+            <a
+              href="https://app.oriso.site"
+              className="inline-flex items-center px-4 py-2 border border-transparent 
+                rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 
+                hover:bg-blue-700 transition-colors"
             >
-              Subscribe to Updates
-            </button>
+              Go to App
+            </a>
           </div>
         </div>
       </div>

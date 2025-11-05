@@ -14,36 +14,45 @@ const PORT = process.env.PORT || 9200;
 const services = {
   webapp: { 
     name: 'Web Application',
-    url: 'http://frontend.caritas.svc.cluster.local:9001' 
+    url: 'http://frontend.caritas.svc.cluster.local:9001',
+    checkType: 'http' // Just check HTTP status
   },
   admin: { 
     name: 'Admin Panel',
-    url: 'http://admin.caritas.svc.cluster.local:9000' 
+    url: 'http://admin.caritas.svc.cluster.local:9000',
+    checkType: 'http' // Just check HTTP status
   },
   auth: { 
     name: 'Authentication',
-    url: 'http://keycloak.caritas.svc.cluster.local:8080/health' 
+    url: 'http://keycloak.caritas.svc.cluster.local:8080',
+    checkType: 'http' // Keycloak doesn't have /health endpoint, check root
   },
   api: { 
     name: 'API Services',
-    url: 'http://agencyservice.caritas.svc.cluster.local:8084/actuator/health' 
+    url: 'http://agencyservice.caritas.svc.cluster.local:8084/actuator/health',
+    checkType: 'actuator' // Spring Boot Actuator endpoint
   },
   messaging: { 
     name: 'Messaging & Chat',
-    url: 'http://matrix-synapse.caritas.svc.cluster.local:8008' 
+    url: 'http://matrix-synapse.caritas.svc.cluster.local:8008/health',
+    checkType: 'text', // Returns plain text "OK"
+    expectedResponse: 'OK'
   },
   uploads: { 
     name: 'File Uploads',
-    url: 'http://uploadservice.caritas.svc.cluster.local:8085/actuator/health' 
+    url: 'http://uploadservice.caritas.svc.cluster.local:8085/actuator/health',
+    checkType: 'actuator' // Spring Boot Actuator endpoint
   },
   video: { 
     name: 'Video Calls',
-    url: 'http://videoservice.caritas.svc.cluster.local:8080/actuator/health' 
+    url: 'http://videoservice.caritas.svc.cluster.local:8080/actuator/health',
+    checkType: 'actuator' // Spring Boot Actuator endpoint (was wrong port before)
   },
   database: { 
     name: 'Database',
     url: 'http://agencyservice.caritas.svc.cluster.local:8084/actuator/health',
-    checkComponent: 'db'
+    checkType: 'actuator',
+    checkComponent: 'db' // Check specific component
   }
 };
 
@@ -73,7 +82,7 @@ app.get('/api/health/:key', (req, res) => {
       port: url.port || (url.protocol === 'https:' ? 443 : 80),
       path: url.pathname + url.search,
       method: 'GET',
-      headers: { 'Accept': 'application/json' },
+      headers: { 'Accept': '*/*' },
       timeout: 5000
     };
 
@@ -85,13 +94,58 @@ app.get('/api/health/:key', (req, res) => {
       });
       
       response.on('end', () => {
-        try {
-          const jsonData = JSON.parse(data);
-          res.status(response.statusCode).json(jsonData);
-        } catch {
-          res.status(response.statusCode).json({ 
-            status: response.statusCode >= 200 && response.statusCode < 300 ? 'UP' : 'DOWN'
+        const isSuccess = response.statusCode >= 200 && response.statusCode < 300;
+        
+        // Handle different check types
+        if (service.checkType === 'text') {
+          // Plain text response (like Matrix /health returns "OK")
+          const isHealthy = data.trim() === (service.expectedResponse || 'OK');
+          return res.json({ 
+            status: isHealthy ? 'UP' : 'DOWN',
+            response: data.trim()
           });
+        } 
+        else if (service.checkType === 'http') {
+          // Just check HTTP status code (HTML responses like Keycloak, Frontend, Admin)
+          return res.json({ 
+            status: isSuccess ? 'UP' : 'DOWN',
+            httpStatus: response.statusCode
+          });
+        }
+        else if (service.checkType === 'actuator') {
+          // Spring Boot Actuator JSON response
+          try {
+            const jsonData = JSON.parse(data);
+            
+            // If checking specific component (like database)
+            if (service.checkComponent && jsonData.components) {
+              const component = jsonData.components[service.checkComponent];
+              return res.json({
+                status: component ? component.status : 'UNKNOWN',
+                component: service.checkComponent,
+                details: component ? component.details : null
+              });
+            }
+            
+            // Return full actuator response
+            return res.json(jsonData);
+          } catch (parseError) {
+            return res.json({ 
+              status: isSuccess ? 'UP' : 'DOWN',
+              error: 'Invalid JSON response'
+            });
+          }
+        }
+        else {
+          // Default: try JSON, fallback to HTTP status
+          try {
+            const jsonData = JSON.parse(data);
+            return res.json(jsonData);
+          } catch {
+            return res.json({ 
+              status: isSuccess ? 'UP' : 'DOWN'
+            });
+          }
         }
       });
     });
