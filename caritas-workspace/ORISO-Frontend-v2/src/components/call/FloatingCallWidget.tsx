@@ -15,9 +15,18 @@ export const FloatingCallWidget: React.FC = () => {
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isMinimized, setIsMinimized] = useState(false);
+    const [otherUserInitial, setOtherUserInitial] = useState<string>('U');
     
     const [isDragging, setIsDragging] = useState(false);
-    const [position, setPosition] = useState({ x: window.innerWidth - 500, y: window.innerHeight - 400 });
+    const [position, setPosition] = useState(() => {
+        // Center the popup initially
+        const popupWidth = 460;
+        const popupHeight = 560;
+        return {
+            x: (window.innerWidth - popupWidth) / 2,
+            y: (window.innerHeight - popupHeight) / 2
+        };
+    });
     const dragStartPos = useRef({ x: 0, y: 0 });
     
     const localVideoRef = useRef<HTMLVideoElement>(null);
@@ -37,6 +46,40 @@ export const FloatingCallWidget: React.FC = () => {
         setCallData(callManager.getCurrentCall());
         return () => unsubscribe();
     }, []);
+
+    // Get other user's initial from Matrix room
+    useEffect(() => {
+        if (!callData) return;
+
+        const matrixClientService = (window as any).matrixClientService;
+        if (!matrixClientService) return;
+
+        const client = matrixClientService.getClient();
+        if (!client) return;
+
+        const room = client.getRoom(callData.roomId);
+        if (!room) return;
+
+        // Get room members
+        const members = room.getMembers();
+        const myUserId = client.getUserId();
+
+        // Find the OTHER user (not me)
+        const otherUser = members.find((m: any) => m.userId !== myUserId);
+
+        if (otherUser) {
+            const username = otherUser.name || otherUser.userId;
+            const initial = username.replace('@', '').charAt(0).toUpperCase();
+            console.log('👤 Other user:', username, '→ Initial:', initial);
+            setOtherUserInitial(initial);
+        } else {
+            // Fallback: use callerUserId if incoming
+            if (callData.callerUserId) {
+                const initial = callData.callerUserId.replace('@', '').charAt(0).toUpperCase();
+                setOtherUserInitial(initial);
+            }
+        }
+    }, [callData]);
 
     // Handle outgoing call initiation
     useEffect(() => {
@@ -193,65 +236,24 @@ export const FloatingCallWidget: React.FC = () => {
             }}
             onMouseDown={handleMouseDown}
         >
-            {/* Header */}
+            {/* Header - Element style */}
             <div className="call-header" style={{ cursor: isFullscreen ? 'default' : 'grab' }}>
-                <div className="call-info">
-                    <span className="call-status">{getStatusText()}</span>
-                    {callData.callerUserId && (
-                        <span className="caller-name">
-                            {callData.callerUserId.replace('@', '').split(':')[0]}
-                        </span>
-                    )}
+                <div className="call-header-left">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                    </svg>
+                    <span>Call</span>
                 </div>
                 
-                {/* Window Controls - CLEAN SVG ICONS */}
-                <div className="window-controls">
-                    <button 
-                        className="control-btn minimize"
-                        onClick={(e) => { e.stopPropagation(); toggleMinimized(); }}
-                        title={isMinimized ? "Restore" : "Minimize"}
-                    >
-                        <svg width="14" height="2" viewBox="0 0 14 2" fill="currentColor">
-                            <rect width="14" height="2" rx="1"/>
-                        </svg>
-                    </button>
-                    <button 
-                        className="control-btn fullscreen"
-                        onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }}
-                        title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-                    >
-                        {isFullscreen ? (
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M10 4H14V0M4 10H0V14M14 10V14H10M0 4V0H4"/>
-                            </svg>
-                        ) : (
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <rect x="1" y="1" width="12" height="12" rx="1"/>
-                            </svg>
-                        )}
-                    </button>
-                    <button 
-                        className="control-btn close"
-                        onClick={(e) => { e.stopPropagation(); handleHangup(); }}
-                        title="Close & Hang Up"
-                    >
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2">
-                            <line x1="2" y1="2" x2="12" y2="12"/>
-                            <line x1="12" y1="2" x2="2" y2="12"/>
-                        </svg>
-                    </button>
-                </div>
+                <button className="fullscreen-toggle" onClick={(e) => { e.stopPropagation(); toggleFullscreen(); }} title="Fullscreen">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                    </svg>
+                </button>
             </div>
 
             {/* Video area */}
             <div className="call-video-area">
-                {/* Avatar placeholder */}
-                {callData.state === 'ringing' && (
-                    <div className="call-avatar">
-                        {callData.callerUserId ? callData.callerUserId.charAt(1).toUpperCase() : 'U'}
-                    </div>
-                )}
-                
                 {/* Video elements */}
                 {callData.isVideo && (
                     <>
@@ -266,37 +268,34 @@ export const FloatingCallWidget: React.FC = () => {
                     </>
                 )}
                 
-                {/* Voice call indicator */}
-                {!callData.isVideo && callData.state !== 'ringing' && (
-                    <div className="call-avatar">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.6 }}>
-                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-                            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-                        </svg>
-                        <div style={{ marginTop: '16px', fontSize: '14px', opacity: 0.7 }}>Voice Call</div>
+                {/* Large avatar - always show for voice or when ringing */}
+                {(!callData.isVideo || callData.state === 'ringing') && (
+                    <div className="call-avatar-large">
+                        {otherUserInitial}
                     </div>
                 )}
             </div>
 
-            {/* Controls - CLEAN SVG ICONS */}
+            {/* Controls - Element exact design */}
             <div className="call-controls">
                 {(callData.state === 'ringing' || (callData.isIncoming && !callData.matrixCall)) ? (
                     <>
                         <button className="call-btn answer-btn" onClick={handleAnswer} title="Answer">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
                             </svg>
                         </button>
                         <button className="call-btn reject-btn" onClick={handleReject} title="Reject">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
                             </svg>
                         </button>
                     </>
                 ) : (
                     <>
-                        <button className={`call-btn ${isMuted ? 'active' : ''}`} onClick={toggleMute} title={isMuted ? 'Unmute' : 'Mute'}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        {/* Microphone - NO dropdown arrow */}
+                        <button className={`call-btn ${isMuted ? 'muted' : ''}`} onClick={toggleMute} title={isMuted ? 'Unmute' : 'Mute'}>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 {isMuted ? (
                                     <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
                                 ) : (
@@ -304,9 +303,11 @@ export const FloatingCallWidget: React.FC = () => {
                                 )}
                             </svg>
                         </button>
+
+                        {/* Camera - NO dropdown arrow */}
                         {callData.isVideo && (
-                            <button className={`call-btn ${isVideoOff ? 'active' : ''}`} onClick={toggleVideo} title={isVideoOff ? 'Turn on video' : 'Turn off video'}>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <button className={`call-btn ${isVideoOff ? 'video-off' : ''}`} onClick={toggleVideo} title={isVideoOff ? 'Turn on video' : 'Turn off video'}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                     {isVideoOff ? (
                                         <path d="M21 6.5l-4 4V7c0-.55-.45-1-1-1H9.82L21 17.18V6.5zM3.27 2L2 3.27 4.73 6H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.21 0 .39-.08.54-.18L19.73 21 21 19.73 3.27 2z"/>
                                     ) : (
@@ -315,8 +316,27 @@ export const FloatingCallWidget: React.FC = () => {
                                 </svg>
                             </button>
                         )}
-                        <button className="call-btn hangup-btn" onClick={handleHangup} title="Hang up">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+
+                        {/* Screen share */}
+                        <button className="call-btn" title="Share screen">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 7l5-5v4h6v2h-6v4l-5-5z"/>
+                                <rect x="3" y="15" width="18" height="2" fill="currentColor"/>
+                            </svg>
+                        </button>
+
+                        {/* More options */}
+                        <button className="call-btn" title="More options">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="6" cy="12" r="2"/>
+                                <circle cx="12" cy="12" r="2"/>
+                                <circle cx="18" cy="12" r="2"/>
+                            </svg>
+                        </button>
+
+                        {/* Hang up */}
+                        <button className="call-btn hangup-btn" onClick={handleHangup} title="End call">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.70 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.11-.7-.28-.79-.74-1.69-1.36-2.67-1.85-.33-.16-.56-.5-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
                             </svg>
                         </button>

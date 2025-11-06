@@ -1,15 +1,12 @@
+// Element-style floating call widget
 .floating-call-widget {
     z-index: 10000;
-    background: #2d3748;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: #3d3d3d; // Dark gray card
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     transition: all 0.3s ease;
     user-select: none;
-
-    &:hover {
-        box-shadow: 0 24px 72px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.15);
-    }
 
     &.minimized {
         width: 280px;
@@ -17,8 +14,8 @@
     }
 
     &.normal {
-        width: 420px;
-        min-height: 520px;
+        width: 460px;
+        min-height: 560px;
         display: flex;
         flex-direction: column;
     }
@@ -31,107 +28,50 @@
         border-radius: 0;
         
         .call-header {
-            padding: 20px 24px;
+            padding: 16px 24px;
         }
         
         .call-video-area {
-            min-height: calc(100vh - 200px);
+            min-height: calc(100vh - 180px);
         }
     }
 
+    // Header with "Call" text and fullscreen icon
     .call-header {
-        background: rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-        padding: 16px 20px;
+        background: #3d3d3d;
+        padding: 12px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         user-select: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
 
-        .call-info {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            color: white;
-            flex: 1;
+    .call-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #b8b8b8;
+        font-size: 14px;
+        font-weight: 500;
 
-            .call-status {
-                font-size: 16px;
-                font-weight: 700;
-                letter-spacing: 0.5px;
-                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            }
-
-            .caller-name {
-                font-size: 13px;
-                font-weight: 400;
-                opacity: 0.9;
-                text-transform: capitalize;
-            }
+        svg {
+            opacity: 0.8;
         }
-        
-        .window-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            
-            .control-btn {
-                width: 32px;
-                height: 32px;
-                background: rgba(255, 255, 255, 0.1);
-                border: none;
-                border-radius: 6px;
-                color: white;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 16px;
-                transition: all 0.2s;
-                
-                &:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                    transform: scale(1.05);
-                }
-                
-                &.minimize {
-                    &:hover {
-                        background: rgba(59, 130, 246, 0.3);
-                    }
-                }
-                
-                &.fullscreen {
-                    &:hover {
-                        background: rgba(16, 185, 129, 0.3);
-                    }
-                }
-                
-                &.close {
-                    &:hover {
-                        background: rgba(239, 68, 68, 0.3);
-                    }
-                }
-            }
-        }
+    }
 
-        .call-mode-controls {
-            display: flex;
-            gap: 6px;
+    .fullscreen-toggle {
+        background: transparent;
+        border: none;
+        color: #b8b8b8;
+        cursor: pointer;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        transition: color 0.2s;
 
-            .mode-btn {
-                background: transparent;
-                border: none;
-                color: white;
-                font-size: 16px;
-                cursor: pointer;
-                padding: 4px 8px;
-                border-radius: 4px;
-                transition: background 0.2s;
-
-                &:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                }
-            }
+        &:hover {
+            color: #ffffff;
         }
     }
 
@@ -139,8 +79,8 @@
         position: relative;
         width: 100%;
         flex: 1;
-        min-height: 320px;
-        background: rgba(0, 0, 0, 0.5);
+        min-height: 380px;
+        background: #e8e8e8; // Light gray background
         display: flex;
         align-items: center;
         justify-content: center;
@@ -160,23 +100,23 @@
             border-radius: 50%;
             border: 3px solid white;
             object-fit: cover;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        // Avatar placeholder when no video
-        .call-avatar {
-            width: 120px;
-            height: 120px;
+        // Large avatar - dark red/maroon with pink letter
+        .call-avatar-large {
+            width: 160px;
+            height: 160px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #8B3A62; // Dark maroon/burgundy
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
-            color: white;
-            font-weight: bold;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            border: 4px solid rgba(255, 255, 255, 0.3);
+            font-size: 72px;
+            color: #F8B4D4; // Light pink
+            font-weight: 600;
+            text-transform: uppercase;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
     }
 
@@ -192,88 +132,100 @@
     }
 
     .call-controls {
-        padding: 24px;
+        padding: 20px;
         display: flex;
         justify-content: center;
-        align-items: center;
-        gap: 20px;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(10px);
+        align-items: flex-end;
+        gap: 16px;
+        background: #e8e8e8; // Match video area
         min-height: 100px;
+    }
 
-        .call-btn {
+
+    .call-btn {
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        // Default: white background with slate/gray border
+        background: #ffffff;
+        border: 2px solid #d1d5db; // Slate/gray outline
+        color: #2d2d2d;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        &:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+
+        // Video off state - lighter background
+        &.video-off {
+            background: #e8e8e8;
+            border-color: #d1d5db;
+            color: #2d2d2d;
+        }
+
+        // Muted state
+        &.muted {
+            background: #ffffff;
+            border-color: #d1d5db;
+            color: #2d2d2d;
+        }
+
+        // Answer button (green)
+        &.answer-btn {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
             width: 56px;
             height: 56px;
-            padding: 0;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: visible;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 
             &:hover {
-                transform: scale(1.1);
-                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+                background: #059669;
+                border-color: #059669;
             }
+        }
 
-            &:active {
-                transform: scale(1.05);
+        // Reject button (red)
+        &.reject-btn {
+            background: #ef4444;
+            border-color: #ef4444;
+            color: white;
+            width: 56px;
+            height: 56px;
+
+            &:hover {
+                background: #dc2626;
+                border-color: #dc2626;
             }
+        }
+        
+        // Hang up button - RED
+        &.hangup-btn {
+            background: #FF3B30;
+            border-color: #FF3B30;
+            color: white;
+            width: 56px;
+            height: 56px;
 
-            &.answer-btn {
-                background: #10b981;
-                color: white;
-                width: 64px;
-                height: 64px;
-                font-size: 24px;
-
-                &:hover {
-                    background: #059669;
-                }
-            }
-
-            &.reject-btn {
-                background: #ef4444;
-                color: white;
-                width: 64px;
-                height: 64px;
-                font-size: 24px;
-
-                &:hover {
-                    background: #dc2626;
-                }
-            }
-            
-            &.hangup-btn {
-                background: #ef4444;
-                color: white;
-                width: 64px;
-                height: 64px;
-                font-size: 24px;
-
-                &:hover {
-                    background: #dc2626;
-                }
-            }
-
-            &:not(.answer-btn):not(.reject-btn):not(.hangup-btn) {
-                background: rgba(255, 255, 255, 0.15);
-                color: white;
-                backdrop-filter: blur(10px);
-
-                &:hover {
-                    background: rgba(255, 255, 255, 0.25);
-                }
-
-                &.active {
-                    background: #ef4444;
-                }
+            &:hover {
+                background: #e6342b;
+                border-color: #e6342b;
             }
         }
     }

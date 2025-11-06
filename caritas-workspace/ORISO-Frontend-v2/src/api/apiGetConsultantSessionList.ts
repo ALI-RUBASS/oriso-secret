@@ -35,7 +35,13 @@ export const apiGetConsultantSessionList = async ({
 	} else {
 		url = `${endpoints.consultantEnquiriesBase}registered?`;
 	}
-	url = url + `count=${count}&filter=all&offset=${offset}`;
+	
+	// Archive endpoint doesn't accept filter parameter - it causes 400 error
+	if (sessionListTab === SESSION_LIST_TAB_ARCHIVE) {
+		url = url + `count=${count}&offset=${offset}`;
+	} else {
+		url = url + `count=${count}&filter=all&offset=${offset}`;
+	}
 
 	return fetchData({
 		url: url,

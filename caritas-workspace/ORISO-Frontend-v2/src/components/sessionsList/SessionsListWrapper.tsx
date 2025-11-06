@@ -36,11 +36,23 @@ export const SessionsListWrapper = ({
 	// Resizable sidebar width
 	const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
 		const saved = localStorage.getItem('sessionsList_width');
-		return saved ? parseInt(saved, 10) : 380;
+		const width = saved ? parseInt(saved, 10) : 380;
+		
+		// Snap to proper size if in awkward range (prevent text truncation)
+		const ICON_ONLY_THRESHOLD = 280; // Match ResizableHandle
+		const MIN_WIDTH = 80;
+		const SNAP_THRESHOLD = 220; // Match ResizableHandle
+		
+		if (width > MIN_WIDTH && width < ICON_ONLY_THRESHOLD) {
+			// Snap to appropriate size
+			return width < SNAP_THRESHOLD ? MIN_WIDTH : ICON_ONLY_THRESHOLD;
+		}
+		
+		return width;
 	});
 	
 	// Icon-only mode when sidebar is small
-	const isIconOnly = sidebarWidth < 220;
+	const isIconOnly = sidebarWidth < 280; // Match threshold
 	
 	const handleResize = useCallback((width: number) => {
 		setSidebarWidth(width);

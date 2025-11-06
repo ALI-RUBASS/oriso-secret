@@ -23,10 +23,24 @@ export const ResizableHandle: React.FC<ResizableHandleProps> = ({
 		(e: MouseEvent) => {
 			if (!isDragging) return;
 
-			const newWidth = Math.min(
+			let newWidth = Math.min(
 				Math.max(e.clientX, minWidth),
 				maxWidth
 			);
+			
+			// Element-like behavior: snap to minimum when below threshold
+			// Prevents awkward sizes where text gets truncated
+			const ICON_ONLY_THRESHOLD = 280; // Increased for better text display
+			const SNAP_THRESHOLD = 220; // Easy snap to icon mode
+			
+			if (newWidth > minWidth && newWidth < ICON_ONLY_THRESHOLD) {
+				// If we're in the awkward range, decide whether to snap to min or normal
+				if (newWidth < SNAP_THRESHOLD) {
+					newWidth = minWidth; // Snap to icon-only mode (smooth)
+				} else {
+					newWidth = ICON_ONLY_THRESHOLD; // Snap to safe minimum width
+				}
+			}
 			
 			onResize(newWidth);
 		},
@@ -62,14 +76,15 @@ export const ResizableHandle: React.FC<ResizableHandleProps> = ({
 				right: '-2px',
 				top: 0,
 				bottom: 0,
-				width: '4px',
+				width: '3px', // Wider for easier grabbing
 				cursor: 'col-resize',
-				backgroundColor: isDragging ? '#0086E6' : 'rgba(0, 134, 230, 0.1)',
-				transition: isDragging ? 'none' : 'background-color 0.2s',
-				zIndex: 10
+				backgroundColor: isDragging ? 'rgba(0, 134, 230, 0.2)' : 'rgba(0, 134, 230, 0.2)',
+				transition: isDragging ? 'none' : 'background-color 0.15s ease',
+				zIndex: 10,
+				opacity: isDragging ? 0.8 : 0.8
 			}}
 			onMouseEnter={(e) => {
-				e.currentTarget.style.backgroundColor = '#0086E6';
+				e.currentTarget.style.backgroundColor = 'rgba(0, 134, 230, 0.3)';
 			}}
 			onMouseLeave={(e) => {
 				if (!isDragging) {

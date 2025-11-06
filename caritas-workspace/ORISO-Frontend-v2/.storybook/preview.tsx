@@ -1,3 +1,4 @@
+// Compound styles loaded via preview-head.html
 import '../src/resources/styles/styles.scss';
 import '../src/resources/styles/mui-variables-mapping.scss';
 import i18n from 'i18next';
