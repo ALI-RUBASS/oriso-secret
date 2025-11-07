@@ -5,7 +5,8 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 
 .navigation {
 	&__wrapper {
-		background-color: var(--skin-color-primary, $primary);
+		background-color: #f5f5f5;
+		border-right: 2px solid #d32f2f;
 
 		&--mobileHidden {
 			display: none !important;
@@ -56,7 +57,7 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 		height: $grid-base-five;
 		width: $grid-base-five;
 		margin: 0;
-		color: var(--text-color-contrast-switch, $white);
+		color: #d32f2f;
 		text-align: center;
 		text-decoration: none;
 		cursor: pointer;
@@ -84,8 +85,17 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 			height: $iconContainerSize;
 			margin: 4px 0; /* Add vertical spacing between buttons */
 			border-radius: 12px;
-			background: rgba(255, 255, 255, 0.1);
+			background: rgba(211, 47, 47, 0.08);
 			transition: all 0.3s ease;
+		}
+
+		&:hover {
+			background: rgba(211, 47, 47, 0.12);
+			color: #d32f2f;
+
+			@include breakpoint($fromLarge) {
+				background: rgba(211, 47, 47, 0.18);
+			}
 		}
 
 		&__top {
@@ -175,16 +185,18 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 			display: none;
 		}
 		.navigation__icon__outline {
+			fill: #d32f2f;
+			color: #d32f2f;
 			display: block;
 			margin: auto;
 		}
 
 		&:hover {
 			@include breakpoint($fromLarge) {
-				background: rgba(255, 255, 255, 0.2);
+				background: rgba(211, 47, 47, 0.18);
 			}
 			
-			color: var(--text-color-contrast-switch, $white);
+			color: #d32f2f;
 			.navigation__icon__filled {
 				display: block;
 				margin: auto;
@@ -206,7 +218,7 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 			position: absolute;
 			inset: -4px;
 			border-radius: 50%;
-			background-color: white;
+			background-color: rgba(211, 47, 47, 0.12);
 			opacity: 0.8;
 			transform: scale(0);
 			z-index: -1;
@@ -219,7 +231,7 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 
 		&--active {
 			@include breakpoint($fromLarge) {
-				background: rgba(255, 255, 255, 0.25);
+				background: rgba(211, 47, 47, 0.24);
 			}
 			
 			.navigation__icon__background::after {
@@ -233,10 +245,10 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 
 			.navigation__icon__filled {
 				display: block;
-				fill: $primary;
+				fill: #d32f2f;
 				
 				@include breakpoint($fromLarge) {
-					fill: white;
+					fill: #d32f2f;
 				}
 			}
 			.navigation__icon__outline {
@@ -251,6 +263,14 @@ $unreadBubbleAnimation: count 500ms ease 500ms forwards;
 		margin: auto;
 		text-align: center;
 		transition: color var(--transition-duration) ease;
+		fill: #d32f2f;
+		color: #d32f2f;
+	}
+
+	&__item__count {
+		color: #d32f2f;
+		background-color: #ffffff;
+		outline: #d32f2f 2px solid;
 	}
 
 	&__title {

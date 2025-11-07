@@ -236,6 +236,14 @@ $profile-footer-justify-content: center !default;
 		position: relative;
 		display: flex;
 
+		&--avatar {
+			width: 56px;
+			height: 56px;
+			margin-right: 16px;
+			background-color: transparent;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		}
+
 		&--active {
 			display: block;
 			width: $grid-base-two;
@@ -517,6 +525,57 @@ $profile-footer-justify-content: center !default;
 		&__separator {
 			display: inline-block;
 			margin: 0 8px;
+		}
+	}
+
+	// Modern profile sections with Compound UI styling
+	&__content__title {
+		background-color: $white;
+		padding: 20px 24px;
+		border-radius: 8px;
+		margin-bottom: 16px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		border: 1px solid #e5e7eb;
+
+		.headline {
+			font-size: 18px;
+			font-weight: 600;
+			color: #1a1a1a;
+			margin-bottom: 8px;
+		}
+
+		.text {
+			color: #6b7280;
+			font-size: 14px;
+			line-height: 1.5;
+		}
+	}
+
+	&__data__content {
+		background-color: $white;
+		padding: 20px 24px;
+		border-radius: 8px;
+		margin-bottom: 16px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		border: 1px solid #e5e7eb;
+
+		&--agencies {
+			padding: 16px 20px;
+			font-weight: 500;
+			color: #374151;
+		}
+	}
+
+	&__propagation-info {
+		background-color: #f9fafb;
+		padding: 12px 16px;
+		border-radius: 6px;
+		margin-top: 12px;
+		border-left: 3px solid #3b82f6;
+
+		.text {
+			color: #4b5563;
+			font-size: 13px;
 		}
 	}
 }

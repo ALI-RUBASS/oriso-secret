@@ -78,17 +78,17 @@ export const ResizableHandle: React.FC<ResizableHandleProps> = ({
 				bottom: 0,
 				width: '3px', // Wider for easier grabbing
 				cursor: 'col-resize',
-				backgroundColor: isDragging ? 'rgba(0, 134, 230, 0.2)' : 'rgba(0, 134, 230, 0.2)',
+				backgroundColor: isDragging ? 'rgba(151, 151, 151, 0.2)' : 'rgba(151, 151, 151, 0.1)',
 				transition: isDragging ? 'none' : 'background-color 0.15s ease',
 				zIndex: 10,
 				opacity: isDragging ? 0.8 : 0.8
 			}}
 			onMouseEnter={(e) => {
-				e.currentTarget.style.backgroundColor = 'rgba(0, 134, 230, 0.3)';
+				e.currentTarget.style.backgroundColor = 'rgba(151, 151, 151, 0.3)';
 			}}
 			onMouseLeave={(e) => {
 				if (!isDragging) {
-					e.currentTarget.style.backgroundColor = 'rgba(0, 134, 230, 0.1)';
+					e.currentTarget.style.backgroundColor = 'rgba(151, 151, 151, 0.1)';
 				}
 			}}
 		/>

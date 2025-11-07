@@ -14,6 +14,7 @@ import { ReactComponent as PersonIcon } from '../../resources/img/icons/person.s
 import { ReactComponent as LogoutIcon } from '../../resources/img/icons/out.svg';
 import { ReactComponent as BackIcon } from '../../resources/img/icons/arrow-left.svg';
 import { Text } from '../text/Text';
+import { UserAvatar } from '../message/UserAvatar';
 import './profile.styles';
 import profileRoutes from './profile.routes';
 import {
@@ -228,24 +229,21 @@ export const Profile = () => {
 							(fromL || subpage) && 'flex__col--25p'
 						}`}
 					>
-						{fromL || !subpage ? (
-							<>
-								<div className="profile__icon flex__col--no-grow">
-									<PersonIcon
-										aria-label={translate(
-											'profile.data.profileIcon'
-										)}
-										className="profile__icon--user"
-										title={translate(
-											'profile.data.profileIcon'
-										)}
-									/>
-								</div>
-								<h3 className="text--nowrap text--ellipsis">
-									{headline}
-								</h3>
-							</>
-						) : (
+					{fromL || !subpage ? (
+						<>
+							<div className="profile__icon profile__icon--avatar flex__col--no-grow">
+								<UserAvatar
+									username={userData.userName}
+									displayName={userData.displayName || userData.userName}
+									userId={userData.userId}
+									size="56px"
+								/>
+							</div>
+							<h3 className="text--nowrap text--ellipsis">
+								{headline}
+							</h3>
+						</>
+					) : (
 							<Link to={`/profile`}>
 								<BackIcon
 									title={translate('app.back')}
