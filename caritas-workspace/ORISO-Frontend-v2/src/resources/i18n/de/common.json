@@ -1066,7 +1066,7 @@
 				}
 			}
 		},
-		"headline": "Login",
+		"headline": "Anmelden",
 		"legal": {
 			"infoText": {
 				"dataprotection": "Datenschutzerklärung",
@@ -1097,6 +1097,10 @@
 				"title": "Noch nicht registriert?"
 			},
 			"linkLabel": "Zu den Beratungsthemen"
+		},
+		"security": {
+			"headline": "Sicher & verschlüsselt",
+			"description": "Ihre Privatsphäre ist dank Ende-zu-Ende-Verschlüsselung vollständig geschützt."
 		},
 		"resend": {
 			"otp": {

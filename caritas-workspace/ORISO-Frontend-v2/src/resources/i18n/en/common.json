@@ -1083,6 +1083,10 @@
 			},
 			"linkLabel": "To the consulting topics"
 		},
+		"security": {
+			"headline": "Secure & Encrypted",
+			"description": "Your privacy is fully protected with end-to-end encryption."
+		},
 		"resend": {
 			"otp": {
 				"email": {

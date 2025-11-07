@@ -332,20 +332,22 @@ export const Login = () => {
 				showRegistrationLink={hasTenant}
 			>
 				<div className="loginForm">
-					<div>
+					<div className="loginForm__inner">
 						<div className="loginForm__headline">
 							<h2>{translate('login.headline')}</h2>
 						</div>
-						<InputField
-							item={inputItemUsername}
-							inputHandle={handleUsernameChange}
-							keyUpHandle={handleKeyUp}
-						/>
-						<InputField
-							item={inputItemPassword}
-							inputHandle={handlePasswordChange}
-							keyUpHandle={handleKeyUp}
-						/>
+
+						<div className="loginForm__fields">
+							<InputField
+								item={inputItemUsername}
+								inputHandle={handleUsernameChange}
+								keyUpHandle={handleKeyUp}
+							/>
+							<InputField
+								item={inputItemPassword}
+								inputHandle={handlePasswordChange}
+								keyUpHandle={handleKeyUp}
+							/>
 						<div
 							className={clsx('loginForm__otp', {
 								'loginForm__otp--active': isOtpRequired
@@ -374,6 +376,7 @@ export const Login = () => {
 								/>
 							)}
 						</div>
+					</div>
 
 						{showLoginError && (
 							<Text
@@ -383,21 +386,27 @@ export const Login = () => {
 							/>
 						)}
 
-						<Button
-							item={loginButton}
-							buttonHandle={handleLogin}
-							disabled={isButtonDisabled || isRequestInProgress}
-						/>
+						<div className="loginForm__actions">
+							<Button
+								item={loginButton}
+								buttonHandle={handleLogin}
+								disabled={isButtonDisabled || isRequestInProgress}
+							/>
 
-						{!(twoFactorType === TWO_FACTOR_TYPES.EMAIL) && (
-							<button
-								onClick={onPasswordResetClick}
-								className="button-as-link"
-								type="button"
-							>
-								{translate('login.resetPasswort.label')}
-							</button>
-						)}
+							{!(twoFactorType === TWO_FACTOR_TYPES.EMAIL) && (
+								<button
+									onClick={onPasswordResetClick}
+									className="button-as-link"
+									type="button"
+								>
+									{translate('login.resetPasswort.label')}
+								</button>
+							)}
+
+							
+						</div>
+
+
 
 						{!hasTenant && (
 							<div className="loginForm__register">
@@ -426,6 +435,36 @@ export const Login = () => {
 								</div>
 							</div>
 						)}
+
+<div className="loginForm__securityBanner">
+							<div className="security-header">
+								<svg
+									width="20"
+									height="20"
+									viewBox="0 0 24 24"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M12 2L3 7V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V7L12 2Z"
+										stroke="#10b981"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+										fill="none"
+									/>
+									<path
+										d="M9 12L11 14L15 10"
+										stroke="#10b981"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+								</svg>
+							</div>
+							<span>{translate('login.security.description')}</span>
+						</div>
+						
 					</div>
 				</div>
 			</StageLayout>
