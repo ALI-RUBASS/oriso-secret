@@ -11,10 +11,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - app.beta.oriso.site
-    secretName: app-beta-oriso-site-tls
+    - element.oriso.site
+    secretName: element-oriso-site-tls
   rules:
-  - host: app.beta.oriso.site
+  - host: element.oriso.site
     http:
       paths:
       - path: /

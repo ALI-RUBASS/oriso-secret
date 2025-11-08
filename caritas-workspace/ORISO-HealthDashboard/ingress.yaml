@@ -9,12 +9,13 @@ metadata:
     # cert-manager: Automatically request certificate from Let's Encrypt
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
+  ingressClassName: traefik
   tls:
   - hosts:
-    - status.oriso.site
-    secretName: status-oriso-site-tls
+    - health.oriso.site
+    secretName: health-oriso-site-tls
   rules:
-  - host: status.oriso.site
+  - host: health.oriso.site
     http:
       paths:
       - path: /

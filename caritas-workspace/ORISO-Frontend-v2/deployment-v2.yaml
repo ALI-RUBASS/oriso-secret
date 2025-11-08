@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: frontend-v2
-        image: caritas-frontend-v2:1762378824
+        image: caritas-frontend-v2:1762636795
         imagePullPolicy: Never
         env:
         - name: NODE_ENV

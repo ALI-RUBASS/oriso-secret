@@ -1,10 +1,24 @@
-import { Meta } from '@storybook/react';
-
+import { Meta, StoryObj } from '@storybook/react';
 import { WelcomeScreen } from './WelcomeScreen';
 
-export default {
-	title: 'Registration/WelcomeScreen',
-	component: WelcomeScreen
-} as Meta<typeof WelcomeScreen>;
+const meta = {
+	title: 'REGISTRATION/WelcomeScreen',
+	component: WelcomeScreen,
+	tags: ['autodocs'],
+	parameters: {
+		docs: {
+			description: {
+				component: 'WelcomeScreen component for the registration welcome page. Displays information about the registration process.'
+			}
+		}
+	}
+} satisfies Meta<typeof WelcomeScreen>;
 
-export const Default = {};
+export default meta;
+type Story = StoryObj<typeof WelcomeScreen>;
+
+export const Default: Story = {
+	args: {
+		nextStepUrl: '/registration/next'
+	}
+};

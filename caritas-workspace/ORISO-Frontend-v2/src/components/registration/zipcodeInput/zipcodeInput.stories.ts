@@ -1,10 +1,24 @@
-import { Meta } from '@storybook/react';
-
+import { Meta, StoryObj } from '@storybook/react';
 import { ZipcodeInput } from './ZipcodeInput';
 
-export default {
-	title: 'Registration/ZicodeInput',
-	component: ZipcodeInput
-} as Meta<typeof ZipcodeInput>;
+const meta = {
+	title: 'REGISTRATION/ZipcodeInput',
+	component: ZipcodeInput,
+	tags: ['autodocs'],
+	parameters: {
+		docs: {
+			description: {
+				component: 'ZipcodeInput component for entering postal code during registration. Validates and updates registration data.'
+			}
+		}
+	}
+} satisfies Meta<typeof ZipcodeInput>;
 
-export const Default = {};
+export default meta;
+type Story = StoryObj<typeof ZipcodeInput>;
+
+export const Default: Story = {
+	args: {
+		onChange: () => {}
+	}
+};

@@ -1,10 +1,11 @@
 import type { StorybookConfig } from '@storybook/react-webpack5';
 import * as webpackConfigFactory from '../config/webpack.config';
 import { Configuration } from 'webpack';
+import webpack from 'webpack';
 
 const config: StorybookConfig = {
 	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	staticDirs: ['./static'],
+	staticDirs: ['./static', '../public'],
 	addons: [
 		'@storybook/addon-links',
 		'@storybook/addon-essentials',
@@ -39,19 +40,25 @@ const config: StorybookConfig = {
 				},
 				plugins: [...webpackConfig.resolve.plugins]
 			},
-			plugins: [...webpackConfig.plugins, ...config.plugins],
+			plugins: [
+				// Ignore intro.js CSS entirely in Storybook - it's not needed
+				new webpack.IgnorePlugin({
+					resourceRegExp: /intro\.js\/introjs\.css$/
+				}),
+				...webpackConfig.plugins,
+				...config.plugins
+			],
 			module: {
 				...config.module,
 				rules: [
 					// Exclude svg from storybook file-loader
 					...config.module.rules.map((r: any) => {
 						if (r.test && /svg/.test(r.test)) {
-							// Silence the Storybook loaders for SVG files
 							return { ...r, exclude: /\.svg$/i };
 						}
 						return r;
 					}),
-					// Filter the last catch all because storybook needs to handle mjs files
+					// Filter webpackConfig rules
 					...webpackConfig.module.rules.map((r) => {
 						if (!r.oneOf) {
 							return r;
@@ -59,7 +66,7 @@ const config: StorybookConfig = {
 						return {
 							...r,
 							oneOf: r.oneOf.filter(
-								(o) => o.type !== 'asset/resource'
+								(o: any) => o.type !== 'asset/resource'
 							)
 						};
 					})
@@ -68,7 +75,21 @@ const config: StorybookConfig = {
 		} as Configuration;
 	},
 	docs: {
-		autodocs: 'tag'
+		autodocs: 'tag',
+		defaultName: 'Documentation',
+		docsMode: false
+	},
+	typescript: {
+		reactDocgen: 'react-docgen-typescript',
+		reactDocgenTypescriptOptions: {
+			shouldExtractLiteralValuesFromEnum: true,
+			propFilter: (prop) => {
+				if (prop.parent) {
+					return !prop.parent.fileName.includes('node_modules');
+				}
+				return true;
+			}
+		}
 	}
 };
 export default config;

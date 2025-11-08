@@ -1800,6 +1800,7 @@
 				"label": "Repeat password",
 				"success": "Your password is identical."
 			},
+			
 			"subline": "To protect your anonymity, we advise you not to use your real name or initials.",
 			"username": {
 				"error": {

@@ -1,8 +1,11 @@
 import { createTheme } from '@mui/material/styles';
 
-const getCssVarValue = (name) =>
+const getCssVarValue = (name, fallback = '#000000') => {
 	// If you need a scss variable add a css variable for it in mui-variables-mapping.scss
-	getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+	const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+	// Return fallback if value is empty (e.g., in Storybook where CSS vars might not be loaded)
+	return value || fallback;
+};
 
 // A custom theme for this app
 const theme = createTheme({
@@ -17,27 +20,27 @@ const theme = createTheme({
 	},
 	palette: {
 		primary: {
-			dark: getCssVarValue('--primary-3'),
-			main: getCssVarValue('--primary'),
-			light: getCssVarValue('--background-light'),
-			lighter: getCssVarValue('--background-lighter')
+			dark: getCssVarValue('--primary-3', '#991b1b'),
+			main: getCssVarValue('--primary', '#dc2626'),
+			light: getCssVarValue('--background-light', '#f3f4f6'),
+			lighter: getCssVarValue('--background-lighter', '#f9fafb')
 		},
 		info: {
-			main: getCssVarValue('--black'),
-			light: getCssVarValue('--tertiary')
+			main: getCssVarValue('--black', '#000000'),
+			light: getCssVarValue('--tertiary', '#6b7280')
 		},
 		error: {
-			main: getCssVarValue('--form-error')
+			main: getCssVarValue('--form-error', '#ef4444')
 		},
 		success: {
-			main: getCssVarValue('--form-success')
+			main: getCssVarValue('--form-success', '#10b981')
 		}
 	},
 
 	typography: {
 		fontFamily: ['Arial', 'sans-serif'].join(','),
 		h1: {
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			letterSpacing: 'normal',
 			fontSize: getCssVarValue('--font-size-h1'),
 			lineHeight: '50px',
@@ -45,7 +48,7 @@ const theme = createTheme({
 			fontFamily: getCssVarValue('--font-family-sans-serif')
 		},
 		h2: {
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			letterSpacing: 'normal',
 			fontSize: getCssVarValue('--font-size-h2'),
 			lineHeight: '38px',
@@ -53,7 +56,7 @@ const theme = createTheme({
 			fontFamily: getCssVarValue('--font-family-sans-serif')
 		},
 		h3: {
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			letterSpacing: 'normal',
 			fontSize: getCssVarValue('--font-size-h3'),
 			lineHeight: '32px',
@@ -61,7 +64,7 @@ const theme = createTheme({
 			fontFamily: getCssVarValue('--font-family-sans-serif')
 		},
 		h4: {
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			letterSpacing: 'normal',
 			fontSize: getCssVarValue('--font-size-h4'),
 			lineHeight: '26px',
@@ -69,7 +72,7 @@ const theme = createTheme({
 			fontFamily: getCssVarValue('--font-family-sans-serif')
 		},
 		h5: {
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			letterSpacing: 'normal',
 			fontSize: getCssVarValue('--font-size-h5'),
 			lineHeight: '24px',
@@ -78,7 +81,7 @@ const theme = createTheme({
 		},
 		body1: {
 			fontFamily: getCssVarValue('--font-family-sans-serif'),
-			color: getCssVarValue('--black'),
+			color: getCssVarValue('--black', '#000000'),
 			lineHeight: getCssVarValue('--line-height-primary'),
 			fontSize: getCssVarValue('--font-size-primary')
 		},
@@ -106,7 +109,7 @@ const theme = createTheme({
 			styleOverrides: {
 				root: {
 					'&:hover': {
-						color: getCssVarValue('--hover-primary')
+						color: getCssVarValue('--hover-primary', '#b91c1c')
 					}
 				}
 			}
@@ -136,12 +139,12 @@ const theme = createTheme({
 					'backgroundColor': 'primary.main',
 					'textTransform': 'none',
 					'outline': 'none',
-					'color': getCssVarValue('--white'),
+					'color': getCssVarValue('--white', '#ffffff'),
 					'boxShadow': 'none',
 					'&:hover': {
 						boxShadow: 'none',
 						color: getCssVarValue('--white'),
-						backgroundColor: getCssVarValue('--hover-primary')
+						backgroundColor: getCssVarValue('--hover-primary', '#b91c1c')
 					}
 				},
 				outlined: {
@@ -150,8 +153,8 @@ const theme = createTheme({
 					'borderRadius': getCssVarValue('--button-border-radius'),
 					'textTransform': 'none',
 					'&:hover': {
-						backgroundColor: getCssVarValue('--hover-primary'),
-						borderColor: getCssVarValue('--hover-primary'),
+						backgroundColor: getCssVarValue('--hover-primary', '#b91c1c'),
+						borderColor: getCssVarValue('--hover-primary', '#b91c1c'),
 						color: getCssVarValue('--white')
 					}
 				}
@@ -162,8 +165,8 @@ const theme = createTheme({
 				tooltip: {
 					lineHeight: '20px',
 					fontSize: getCssVarValue('--font-size-tertiary'),
-					color: getCssVarValue('--black'),
-					backgroundColor: getCssVarValue('--white'),
+					color: getCssVarValue('--black', '#000000'),
+					backgroundColor: getCssVarValue('--white', '#ffffff'),
 					fontWeight: getCssVarValue('--font-weight-regular'),
 					fontFamily: getCssVarValue('--font-family-sans-serif'),
 					borderRadius: '4px',
@@ -172,7 +175,7 @@ const theme = createTheme({
 					padding: '17px 24px'
 				},
 				arrow: {
-					color: getCssVarValue('--white')
+					color: getCssVarValue('--white', '#ffffff')
 				}
 			}
 		}

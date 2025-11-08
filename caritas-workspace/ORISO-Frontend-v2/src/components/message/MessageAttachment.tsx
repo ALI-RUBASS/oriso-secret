@@ -153,12 +153,23 @@ export const MessageAttachment = (props: MessageAttachmentProps) => {
 		return null;
 	}, []);
 
+	// Helper to build URL - if title_link is already a full URL, use it as-is
+	const buildUrl = useCallback((link: string) => {
+		if (!link) return '';
+		// If link already starts with http:// or https://, it's a full URL
+		if (link.startsWith('http://') || link.startsWith('https://')) {
+			return link;
+		}
+		// Otherwise, prepend apiUrl
+		return apiUrl + link;
+	}, []);
+
 	// Check if it's an image to display preview
 	const isImage = props.file.type?.startsWith('image/') || props.attachment.type === 'image';
-	const imageUrl = isImage ? apiUrl + props.attachment.title_link : null;
+	const imageUrl = isImage ? buildUrl(props.attachment.title_link) : null;
 
 	// For non-encrypted files, wrap in download link
-	const downloadUrl = apiUrl + props.attachment.title_link;
+	const downloadUrl = buildUrl(props.attachment.title_link);
 	
 	return (
 		<>
@@ -254,7 +265,7 @@ export const MessageAttachment = (props: MessageAttachmentProps) => {
 				) : (
 					<div 
 						className="messageItem__message__attachment"
-						onClick={() => attachmentStatus === ENCRYPTED && decryptFile(apiUrl + props.attachment.title_link)}
+						onClick={() => attachmentStatus === ENCRYPTED && decryptFile(buildUrl(props.attachment.title_link))}
 						style={{ cursor: attachmentStatus === ENCRYPTED ? 'pointer' : 'default' }}
 					>
 						<div className="messageItem__message__attachment__info">

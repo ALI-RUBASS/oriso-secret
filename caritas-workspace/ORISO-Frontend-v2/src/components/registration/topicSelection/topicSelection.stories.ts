@@ -1,17 +1,26 @@
-import { Meta } from '@storybook/react';
-
+import { Meta, StoryObj } from '@storybook/react';
 import { TopicSelection } from './TopicSelection';
 
-export default {
-	title: 'Registration/TopicSelection',
-	component: TopicSelection
-} as Meta<typeof TopicSelection>;
-
-export const Default = {
-	args: {
-		view: {
-			options: ['showResults', 'loading', 'noResults', 'oneResult'],
-			control: { type: 'select' }
+const meta = {
+	title: 'REGISTRATION/TopicSelection',
+	component: TopicSelection,
+	tags: ['autodocs'],
+	parameters: {
+		docs: {
+			description: {
+				component: 'TopicSelection component for selecting topics during registration.'
+			}
 		}
+	}
+} satisfies Meta<typeof TopicSelection>;
+
+export default meta;
+type Story = StoryObj<typeof TopicSelection>;
+
+export const Default: Story = {
+	args: {
+		onChange: () => {},
+		nextStepUrl: '/registration/next',
+		onNextClick: () => {}
 	}
 };
