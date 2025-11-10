@@ -88,6 +88,7 @@ export const Registration = () => {
 	const [stepData, setStepData] = useState<Partial<RegistrationData>>({});
 	const [redirectOverlayActive, setRedirectOverlayActive] =
 		useState<boolean>(false);
+	const [isRegistering, setIsRegistering] = useState<boolean>(false);
 
 	const handleOverlayAction = (buttonFunction: string) => {
 		if (buttonFunction === OVERLAY_FUNCTIONS.REDIRECT_WITH_BLUR) {
@@ -190,6 +191,11 @@ export const Registration = () => {
 	]);
 
 	const onRegisterClick = useCallback(() => {
+		// Prevent multiple clicks
+		if (isRegistering) {
+			return;
+		}
+
 		const data = {
 			...registrationData,
 			...stepData,
@@ -210,15 +216,28 @@ export const Registration = () => {
 				REGISTRATION_DATA_VALIDATION[item].validation(data[item])
 			)
 		) {
+			setIsRegistering(true);
 			apiPostRegistration(
 				endpoints.registerAsker,
 				data,
 				settings.multitenancyWithSingleDomainEnabled,
 				tenant
-			).then(() => {
-				sessionStorage.removeItem(registrationSessionStorageKey);
-				setRedirectOverlayActive(true);
-			});
+			)
+				.then(() => {
+					sessionStorage.removeItem(registrationSessionStorageKey);
+					setRedirectOverlayActive(true);
+				})
+				.catch((error) => {
+					console.error('Registration failed:', error);
+					setIsRegistering(false);
+					addNotification({
+						notificationType: NOTIFICATION_TYPE_ERROR,
+						title: t('registration.errors.ups.title'),
+						text: t('registration.errors.ups.text'),
+						closeable: true,
+						timeout: 3000
+					});
+				});
 		} else {
 			addNotification({
 				notificationType: NOTIFICATION_TYPE_ERROR,
@@ -236,7 +255,8 @@ export const Registration = () => {
 		tenant,
 		addNotification,
 		t,
-		locale
+		locale,
+		isRegistering
 	]);
 
 	const stepPaths = useMemo(
@@ -369,16 +389,18 @@ export const Registration = () => {
 										{!nextStepUrl ? (
 											<Button
 												data-cy="button-register"
-												disabled={disabledNextButton}
+												disabled={disabledNextButton || isRegistering}
 												variant="contained"
 												onClick={onRegisterClick}
 												type={
-													disabledNextButton
+													disabledNextButton || isRegistering
 														? 'button'
 														: 'submit'
 												}
 											>
-												{t('registration.register')}
+												{isRegistering
+													? t('registration.registering', 'Registering...')
+													: t('registration.register')}
 											</Button>
 										) : (
 											<Button

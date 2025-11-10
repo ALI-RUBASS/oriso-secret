@@ -202,10 +202,8 @@ export const MatrixCallView: React.FC<MatrixCallViewProps> = ({
                         title={isMuted ? 'Unmute' : 'Mute'}
                     >
                         {isMuted ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                                <path d="M12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2Z" fill="currentColor"/>
-                                <path d="M17 11C17 13.76 14.76 16 12 16C9.24 16 7 13.76 7 11H5C5 14.53 7.61 17.43 11 17.92V21H13V17.92C16.39 17.43 19 14.53 19 11H17Z" fill="currentColor"/>
-                                <path d="M2 2L22 22" stroke="currentColor" strokeWidth="2"/>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
                             </svg>
                         ) : (
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -238,8 +236,8 @@ export const MatrixCallView: React.FC<MatrixCallViewProps> = ({
                     </div>
                 )}
 
-                {/* Screen share */}
-                <button 
+                {/* Screen share - Hidden for now */}
+                {/* <button 
                     className="matrix-call__control-btn matrix-call__control-btn--dark"
                     title="Share screen"
                 >
@@ -247,7 +245,7 @@ export const MatrixCallView: React.FC<MatrixCallViewProps> = ({
                         <path d="M5 13h14v-2H5v2zm3-6l5-5v4h5v2h-5v4l-5-5z"/>
                         <rect x="3" y="15" width="18" height="2" fill="currentColor"/>
                     </svg>
-                </button>
+                </button> */}
 
                 {/* More options */}
                 <button 

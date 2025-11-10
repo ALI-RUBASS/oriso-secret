@@ -130,7 +130,13 @@ const theme = createTheme({
 					fontSize: getCssVarValue('--font-size-primary'),
 					fontWeight: getCssVarValue('--font-weight-bold'),
 					lineHeight: '20px',
-					borderRadius: getCssVarValue('--button-border-radius')
+					borderRadius: getCssVarValue('--button-border-radius'),
+					'&.Mui-disabled': {
+						backgroundColor: 'rgba(0, 0, 0, 0.12)',
+						color: 'rgba(0, 0, 0, 0.26)',
+						cursor: 'not-allowed',
+						pointerEvents: 'auto'
+					}
 				},
 				contained: {
 					'paddingTop': '14px',
@@ -145,6 +151,12 @@ const theme = createTheme({
 						boxShadow: 'none',
 						color: getCssVarValue('--white'),
 						backgroundColor: getCssVarValue('--hover-primary', '#b91c1c')
+					},
+					'&.Mui-disabled': {
+						backgroundColor: 'rgba(0, 0, 0, 0.12)',
+						color: 'rgba(0, 0, 0, 0.26)',
+						cursor: 'not-allowed',
+						pointerEvents: 'auto'
 					}
 				},
 				outlined: {
