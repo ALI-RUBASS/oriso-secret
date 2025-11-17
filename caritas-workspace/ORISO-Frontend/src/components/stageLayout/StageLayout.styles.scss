@@ -8,6 +8,9 @@
 	&__footer {
 		flex: 0;
 		padding: 0 $grid-base-two $grid-base-four;
+		pointer-events: auto;
+		position: relative;
+		z-index: 30;
 
 		@include breakpoint($fromLarge) {
 			padding: 0 $grid-base-three $grid-base-four;
@@ -114,6 +117,9 @@
 		display: flex;
 		align-items: center;
 		margin: 0;
+		pointer-events: auto;
+		position: relative;
+		z-index: 30;
 
 		@include breakpoint($fromXLarge) {
 			justify-content: flex-end;
@@ -127,6 +133,9 @@
 			padding: 0;
 			white-space: nowrap;
 			color: $tertiary;
+			pointer-events: auto;
+			position: relative;
+			z-index: 31;
 
 			&:focus {
 				outline: $focus-outline;
