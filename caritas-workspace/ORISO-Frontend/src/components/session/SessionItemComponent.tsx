@@ -95,8 +95,10 @@ export const SessionItemComponent = (props: SessionItemProps) => {
 	}, [activeSession.rid, userData.userName]);
 
 	useEffect(() => {
-		setCanWriteMessage(type !== SESSION_LIST_TYPES.ENQUIRY);
-	}, [type, userData, activeSession]);
+		const canWrite = type !== SESSION_LIST_TYPES.ENQUIRY;
+		console.log('🔥 SessionItemComponent: canWriteMessage =', canWrite, '(type:', type, ', isGroup:', activeSession.isGroup, ')');
+		setCanWriteMessage(canWrite);
+	}, [type, userData, activeSession, activeSession.isGroup]);
 
 	useEffect(() => {
 		if (messages && messages.length > 0 && !initialScrollCompleted) {

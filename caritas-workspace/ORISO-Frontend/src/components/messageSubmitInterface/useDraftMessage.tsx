@@ -46,8 +46,9 @@ export const useDraftMessage = (
 
 	// Load the draft message from the api but do not show it because its encrypted
 	useEffect(() => {
-		// MATRIX MIGRATION: Skip draft message loading for Matrix sessions (no rid)
-		if (!activeSession.rid) {
+		// MATRIX MIGRATION: Skip draft message loading for Matrix sessions (no rid) or group chats
+		// Group chats use Matrix and don't support draft messages yet
+		if (!activeSession.rid || activeSession.isGroup) {
 			setLoaded(true);
 			return;
 		}
@@ -66,7 +67,7 @@ export const useDraftMessage = (
 		return () => {
 			abortController?.abort();
 		};
-	}, [activeSession.rid]);
+	}, [activeSession.rid, activeSession.isGroup]);
 
 	// If everything is ready for decryption, decrypt the draft message
 	useEffect(() => {
@@ -112,7 +113,8 @@ export const useDraftMessage = (
 
 	const saveDraftMessage = useCallback(
 		async (draftMessage) => {
-			if (!enabled || !loaded || !activeSession.rid) {
+			// MATRIX MIGRATION: Skip draft saving for group chats (Matrix-based)
+			if (!enabled || !loaded || !activeSession.rid || activeSession.isGroup) {
 				return;
 			}
 			const groupId = activeSession.rid;

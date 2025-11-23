@@ -364,9 +364,14 @@ export const SessionStream = ({
 
 	// MATRIX MIGRATION: Real-time message sync for Matrix sessions
 	useEffect(() => {
-		// Only for Matrix sessions (no Rocket.Chat rid)
-		if (!activeSession.rid && activeSession.item?.matrixRoomId && activeSession.item?.id) {
-			const matrixRoomId = activeSession.item.matrixRoomId;
+		// Only for Matrix sessions (no Rocket.Chat rid OR rid is a Matrix room ID)
+		// For group chats, rid contains the Matrix room ID (starts with '!')
+		const isMatrixSession = (!activeSession.rid || (activeSession.rid && activeSession.rid.startsWith('!'))) && activeSession.item?.id;
+		const matrixRoomId = activeSession.rid && activeSession.rid.startsWith('!') 
+			? activeSession.rid 
+			: activeSession.item?.matrixRoomId;
+		
+		if (isMatrixSession && matrixRoomId) {
 			const sessionId = activeSession.item.id;
 			console.log('🔷 Setting up Matrix real-time listener for room:', matrixRoomId);
 
@@ -480,7 +485,7 @@ export const SessionStream = ({
 				}).catch(e => console.warn('Could not unregister room:', e));
 			};
 		}
-	}, [activeSession.rid, activeSession.item?.matrixRoomId, activeSession.item?.id, fetchSessionMessages]);
+	}, [activeSession.rid, activeSession.item?.matrixRoomId, activeSession.item?.id, fetchSessionMessages, apiUrl]);
 
 	useEffect(() => {
 		if (subscribed.current) {

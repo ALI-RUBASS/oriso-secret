@@ -150,6 +150,14 @@ export const MessageSubmitInterfaceComponent = ({
 	handleMessageSendSuccess: onMessageSendSuccess
 }: MessageSubmitInterfaceComponentProps) => {
 	const { t: translate } = useTranslation();
+	
+	// Debug logging
+	useEffect(() => {
+		console.log('🔥 MessageSubmitInterface MOUNTED');
+		return () => {
+			console.log('🔥 MessageSubmitInterface UNMOUNTED');
+		};
+	}, []);
 	const tenant = useTenant();
 	const history = useHistory();
 	const { getDevToolbarOption } = useDevToolbar();
@@ -539,8 +547,9 @@ export const MessageSubmitInterfaceComponent = ({
 	const sendMessage = useCallback(
 		async (message, attachment: File, isEncrypted) => {
 			const sendToRoomWithId = activeSession.rid || activeSession.item.id;
-		// MATRIX MIGRATION: Determine if this is a Matrix session (no rcGroupId)
-		const isMatrixSession = !activeSession.rid && activeSession.item?.id;
+		// MATRIX MIGRATION: Determine if this is a Matrix session
+		// Matrix sessions have either no rid, or rid is a Matrix room ID (starts with '!')
+		const isMatrixSession = (!activeSession.rid || (activeSession.rid && activeSession.rid.startsWith('!'))) && activeSession.item?.id;
 		const matrixSessionId = isMatrixSession ? activeSession.item.id : undefined;
 			const getSendMailNotificationStatus = () => !activeSession.isGroup;
 
@@ -655,13 +664,18 @@ export const MessageSubmitInterfaceComponent = ({
 			const shouldSendTextMessage = getTypedMarkdownMessage() && (!attachment || !matrixSessionId);
 			
 			if (shouldSendTextMessage) {
+				// MATRIX MIGRATION: For group chats, Matrix room ID is in activeSession.rid
+				const matrixRoomId = activeSession.rid && activeSession.rid.startsWith('!') 
+					? activeSession.rid 
+					: activeSession.item?.matrixRoomId;
+				
 				await apiSendMessage(
 					message,
 					sendToRoomWithId,
 					getSendMailNotificationStatus() && !attachment,
 					isEncrypted,
 					matrixSessionId,
-					activeSession.item?.matrixRoomId  // Pass Matrix room ID for SDK sending
+					matrixRoomId  // Pass Matrix room ID for SDK sending
 				)
 					.then(() => encryptRoom(setE2EEState))
 					.then(() => {

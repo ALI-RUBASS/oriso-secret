@@ -358,6 +358,12 @@ export const useE2EE = (
 			setRoomNotFound(false);
 		};
 
+		// MATRIX MIGRATION: Matrix rooms don't use RocketChat E2EE, skip the check
+		if (rid && rid.startsWith('!')) {
+			setReady(true);
+			return cleanup;
+		}
+
 		// Wait for e2ee logic is fully loaded
 		if (!e2EEReady) {
 			return cleanup;
