@@ -199,7 +199,7 @@ export const CreateGroupChatView = () => {
 			.filter((consultant) => selectedConsultants.includes(consultant.consultantId))
 			.map((consultant) => ({
 				value: consultant.consultantId,
-				label: `${consultant.firstName} ${consultant.lastName} (${consultant.username})`
+				label: `${consultant.firstName} ${consultant.lastName}`
 			}));
 	}, [availableConsultants, selectedConsultants]);
 
@@ -208,7 +208,7 @@ export const CreateGroupChatView = () => {
 			id: 'consultants',
 			selectedOptions: availableConsultants.map((consultant) => ({
 				value: consultant.consultantId,
-				label: `${consultant.firstName} ${consultant.lastName} (${consultant.username})`
+				label: `${consultant.firstName} ${consultant.lastName}`
 			})),
 			defaultValue: getSelectedConsultantOptions(),
 			handleDropdownSelect: handleConsultantsSelect,

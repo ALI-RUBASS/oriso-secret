@@ -342,15 +342,9 @@ export const SessionListItemComponent = ({
 					role="tab"
 				>
 					<div className="sessionsListItem__row">
-						<div className="sessionsListItem__consultingType">
-							{topic?.name || ''}
-						</div>
-						<div className="sessionsListItem__date">
-							{getGroupChatDate(
-								activeSession.item,
-								translate('sessionList.time.label.postfix')
-							)}
-						</div>
+					<div className="sessionsListItem__consultingType">
+						{topic?.name || ''}
+					</div>
 					</div>
 					<div className="sessionsListItem__row">
 						<div className="sessionsListItem__icon">

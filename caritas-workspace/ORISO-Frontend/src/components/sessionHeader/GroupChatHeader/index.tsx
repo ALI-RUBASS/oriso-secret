@@ -185,18 +185,11 @@ export const GroupChatHeader = ({
 					isJoinGroupChatView={isJoinGroupChatView}
 					bannedUsers={bannedUsers}
 				/>
-			</div>
-			<div className="sessionInfo__metaInfo">
-				<div className="sessionInfo__metaInfo__content">
-					{getGroupChatDate(
-						activeSession.item,
-						t('sessionList.time.label.postfix'),
-						true
-					)}
-				</div>
-				{activeSession.item.active &&
-					activeSession.item.subscribed &&
-					!isJoinGroupChatView && (
+		</div>
+		<div className="sessionInfo__metaInfo">
+			{activeSession.item.active &&
+				activeSession.item.subscribed &&
+				!isJoinGroupChatView && (
 						<div
 							className="sessionInfo__metaInfo__content sessionInfo__metaInfo__content--clickable"
 							id="subscriberButton"
