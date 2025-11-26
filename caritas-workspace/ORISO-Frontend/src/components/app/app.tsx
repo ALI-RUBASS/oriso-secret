@@ -28,6 +28,7 @@ import {
 } from '../../globalState/interfaces';
 import { LegalLinksProvider } from '../../globalState/provider/LegalLinksProvider';
 import { useAppConfig } from '../../hooks/useAppConfig';
+import { useNotificationPermission } from '../../hooks/useNotificationPermission';
 import { DevToolbarWrapper } from '../devToolbar/DevToolbar';
 import { PreConditions, preConditionsMet } from './PreConditions';
 import { Loading } from './Loading';
@@ -36,6 +37,7 @@ import { UrlParamsProvider } from '../../globalState/provider/UrlParamsProvider'
 import { Notifications } from '../notifications/Notifications';
 import { CallProvider } from '../../globalState/provider/CallProvider';
 import { FloatingCallWidget } from '../call/FloatingCallWidget';
+import { GroupCallWidget } from '../call/GroupCallWidget';
 
 const Login = lazy(() =>
 	import('../login/Login').then((m) => ({ default: m.Login }))
@@ -116,6 +118,9 @@ interface RouterWrapperProps {
 
 const RouterWrapper = ({ extraRoutes }: RouterWrapperProps) => {
 	const settings = useAppConfig();
+	
+	// Request notification permission for incoming calls
+	useNotificationPermission();
 
 	const [startWebsocket, setStartWebsocket] = useState<boolean>(false);
 	const [disconnectWebsocket, setDisconnectWebsocket] =
@@ -193,6 +198,7 @@ const RouterWrapper = ({ extraRoutes }: RouterWrapperProps) => {
 							</Switch>
 							<NotificationsContainer />
 							<FloatingCallWidget />
+						<GroupCallWidget />
 							{/* Clean implementation using CallManager */}
 						</Suspense>
 						</CallProvider>

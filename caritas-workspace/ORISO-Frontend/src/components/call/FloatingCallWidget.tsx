@@ -42,6 +42,9 @@ export const FloatingCallWidget: React.FC = () => {
             if (!newCallData) {
                 callInitiatedRef.current = false;
                 setCallDuration(0);
+            } else {
+                // Reset callInitiatedRef for new calls
+                callInitiatedRef.current = false;
             }
         });
         setCallData(callManager.getCurrentCall());
@@ -51,6 +54,9 @@ export const FloatingCallWidget: React.FC = () => {
     // Get other user's initial from Matrix room
     useEffect(() => {
         if (!callData) return;
+        
+        // 🚫 SKIP if this is a group call - GroupCallWidget will handle it
+        if (callData.isGroup) return;
 
         const matrixClientService = (window as any).matrixClientService;
         if (!matrixClientService) return;
@@ -85,6 +91,12 @@ export const FloatingCallWidget: React.FC = () => {
     // Handle outgoing call initiation
     useEffect(() => {
         if (!callData || callData.isIncoming || callInitiatedRef.current || callData.matrixCall) return;
+        
+        // 🚫 SKIP if this is a group call - GroupCallWidget will handle it with LiveKit
+        if (callData.isGroup) {
+            console.log('🚫 FloatingCallWidget: Skipping group call (handled by GroupCallWidget)');
+            return;
+        }
         
         callInitiatedRef.current = true;
         
@@ -256,7 +268,9 @@ export const FloatingCallWidget: React.FC = () => {
         return 'Call Active';
     };
 
-    if (!callData) return null;
+    // Only render for 1-on-1 calls (not group calls)
+    // Group calls are handled by GroupCallWidget
+    if (!callData || callData.isGroup) return null;
 
     const widgetClass = `floating-call-widget ${isFullscreen ? 'fullscreen' : isMinimized ? 'minimized' : 'normal'}`;
 

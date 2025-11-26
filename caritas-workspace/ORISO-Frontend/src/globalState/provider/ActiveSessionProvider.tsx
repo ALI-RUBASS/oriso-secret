@@ -23,6 +23,11 @@ export const ActiveSessionProvider: React.FC<ActiveSessionContextProps> = ({
 		[activeSession, reloadActiveSession, readActiveSession]
 	);
 
+	// Expose active session globally for CallManager to access
+	React.useEffect(() => {
+		(window as any).__activeSessionContext = contextValue;
+	}, [contextValue]);
+
 	return (
 		<ActiveSessionContext.Provider value={contextValue}>
 			{children}

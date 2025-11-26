@@ -24,6 +24,7 @@ import {
 	GroupChatInfoIcon
 } from '../../../resources/img/icons';
 import { ReactComponent as VideoCallIcon } from '../../../resources/img/illustrations/camera.svg';
+import { ReactComponent as CallOnIcon } from '../../../resources/img/icons/call-on.svg';
 import { SessionMenu } from '../../sessionMenu/SessionMenu';
 import { useTranslation } from 'react-i18next';
 import { getGroupChatDate } from '../../session/sessionDateHelpers';
@@ -33,7 +34,6 @@ import { FlyoutMenu } from '../../flyoutMenu/FlyoutMenu';
 import { BanUser, BanUserOverlay } from '../../banUser/BanUser';
 import { Tag } from '../../tag/Tag';
 import { BUTTON_TYPES, Button, ButtonItem } from '../../button/Button';
-import { useStartVideoCall } from './useStartVideoCall';
 import { useAppConfig } from '../../../hooks/useAppConfig';
 import { RocketChatUsersOfRoomContext } from '../../../globalState/provider/RocketChatUsersOfRoomProvider';
 import { SessionItemInterface } from '../../../globalState/interfaces';
@@ -69,7 +69,77 @@ export const GroupChatHeader = ({
 		AUTHORITIES.CONSULTANT_DEFAULT,
 		userData
 	);
-	const { startVideoCall } = useStartVideoCall();
+	
+	// Use CallManager for group calls (same as SessionMenu)
+	const handleStartVideoCall = async (isVideoActivated: boolean = true) => {
+		console.log("═══════════════════════════════════════════════");
+		console.log("🎬 GROUP CALL BUTTON CLICKED (GroupChatHeader)!");
+		console.log("═══════════════════════════════════════════════");
+		
+		try {
+			const roomId = activeSession.item.matrixRoomId || activeSession.item.groupId;
+			
+			if (!roomId) {
+				console.error('❌ No Matrix room ID found for session');
+				alert('Cannot start call: No Matrix room found for this session');
+				return;
+			}
+
+			// Check HTTPS
+			if (window.location.protocol !== 'https:') {
+				console.error('❌ Not on HTTPS! Safari requires HTTPS for camera/microphone access');
+				const httpsUrl = window.location.href.replace('http://', 'https://');
+				if (window.confirm('Camera/microphone access requires HTTPS. Redirect to secure connection?')) {
+					window.location.href = httpsUrl;
+				}
+				return;
+			}
+
+			// Request media permissions IMMEDIATELY in click handler
+			console.log('🎤 Requesting media permissions (SYNC with user click)...');
+			
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({ 
+					video: isVideoActivated, 
+					audio: true 
+				});
+				console.log('✅ Media permissions granted!', stream);
+				
+				// Store stream globally
+				(window as any).__preRequestedMediaStream = stream;
+				(window as any).__preRequestedMediaStreamTime = Date.now();
+			} catch (mediaError: any) {
+				console.error('❌ Media permission denied:', mediaError);
+				
+				let errorMsg = 'Cannot access camera/microphone. ';
+				if (mediaError.name === 'NotAllowedError') {
+					errorMsg += 'Please grant permissions in your browser settings.';
+				} else if (mediaError.name === 'NotFoundError') {
+					errorMsg += 'No camera/microphone found on this device.';
+				} else if (mediaError.name === 'NotSupportedError') {
+					errorMsg += 'Your browser does not support this feature. Please use HTTPS.';
+				} else {
+					errorMsg += mediaError.message || 'Unknown error.';
+				}
+				
+				alert(errorMsg);
+				return;
+			}
+
+			console.log('📞 Starting call via CallManager with roomId:', roomId);
+			console.log('🎯 This is a GROUP CHAT - forcing isGroup=true');
+			
+			// Use CallManager (works for both 1-on-1 and group calls!)
+			const { callManager } = require('../../../services/CallManager');
+			callManager.startCall(roomId, isVideoActivated, true); // Force isGroup=true for group chats
+			
+			console.log('✅ Call initiated!');
+		} catch (error) {
+			console.error('💥 ERROR in handleStartVideoCall:', error);
+			alert(`Call failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+		}
+		console.log("═══════════════════════════════════════════════");
+	};
 
 	const sessionTabPath = `${
 		sessionListTab ? `?sessionListTab=${sessionListTab}` : ''
@@ -99,16 +169,28 @@ export const GroupChatHeader = ({
 		}
 	};
 
-	const StartButtonIcon = isMobile ? VideoCallIcon : CameraOnIcon;
+	// Voice call button
+	const buttonStartCall: ButtonItem = {
+		type: BUTTON_TYPES.SMALL_ICON,
+		title: t('videoCall.button.startCall'),
+		smallIconBackgroundColor: 'grey',
+		icon: (
+			<CallOnIcon
+				title={t('videoCall.button.startCall')}
+				aria-label={t('videoCall.button.startCall')}
+			/>
+		)
+	};
+
+	// Video call button
 	const buttonStartVideoCall: ButtonItem = {
 		type: BUTTON_TYPES.SMALL_ICON,
 		title: t('videoCall.button.startVideoCall'),
-		smallIconBackgroundColor: isMobile ? 'transparent' : 'grey', // Modern purple/violet
+		smallIconBackgroundColor: 'grey',
 		icon: (
-			<StartButtonIcon
+			<CameraOnIcon
 				title={t('videoCall.button.startVideoCall')}
 				aria-label={t('videoCall.button.startVideoCall')}
-				fillOpacity={isMobile ? 0.9 : 1}
 			/>
 		)
 	};
@@ -164,15 +246,18 @@ export const GroupChatHeader = ({
 
 				{isActive &&
 					!isJoinGroupChatView &&
-					isConsultant &&
-					releaseToggles.featureVideoGroupChatsEnabled && (
+					isConsultant && (
 						<div
 							className="sessionInfo__videoCallButtons"
 							data-cy="session-header-video-call-buttons"
 						>
 							<Button
-								buttonHandle={() => startVideoCall()}
+								buttonHandle={() => handleStartVideoCall(true)}
 								item={buttonStartVideoCall}
+							/>
+							<Button
+								buttonHandle={() => handleStartVideoCall(false)}
+								item={buttonStartCall}
 							/>
 						</div>
 					)}

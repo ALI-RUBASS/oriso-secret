@@ -327,7 +327,7 @@ export const SessionMenu = (props: SessionMenuProps) => {
 
 	const hasVideoCallFeatures = () =>
 		hasUserAuthority(AUTHORITIES.CONSULTANT_DEFAULT, userData) &&
-		activeSession.isSession &&
+		(activeSession.isSession || activeSession.isGroup) && // 🎯 Enable for both 1-on-1 AND group chats
 		type !== SESSION_LIST_TYPES.ENQUIRY &&
 		consultingType.isVideoCallAllowed;
 
@@ -336,8 +336,7 @@ export const SessionMenu = (props: SessionMenuProps) => {
 		console.log("🎬 CALL BUTTON CLICKED!");
 		console.log("═══════════════════════════════════════════════");
 		console.log("Video activated?", isVideoActivated);
-		console.log("User Agent:", navigator.userAgent);
-		console.log("Is Safari?", /^((?!chrome|android).)*safari/i.test(navigator.userAgent));
+		console.log("Is group chat?", activeSession.isGroup);
 		
 		try {
 			// Get Matrix room ID from active session
@@ -352,7 +351,7 @@ export const SessionMenu = (props: SessionMenuProps) => {
 			
 			if (!roomId) {
 				console.error('❌ No Matrix room ID found for session');
-				alert(`Cannot start call: No Matrix room found for this session.`);
+				alert('Cannot start call: No Matrix room found for this session');
 				return;
 			}
 
@@ -379,7 +378,7 @@ export const SessionMenu = (props: SessionMenuProps) => {
 				console.log('✅ Media permissions granted!', stream);
 				console.log('Stream tracks:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
 				
-				// Store stream globally so FloatingCallWidget can use it
+				// Store stream globally so FloatingCallWidget/GroupCallWidget can use it
 				(window as any).__preRequestedMediaStream = stream;
 				(window as any).__preRequestedMediaStreamTime = Date.now();
 			} catch (mediaError: any) {
@@ -404,7 +403,7 @@ export const SessionMenu = (props: SessionMenuProps) => {
 
 			console.log('📞 Starting call via CallManager with roomId:', roomId);
 			
-			// Use CallManager directly (clean architecture!)
+			// Use CallManager directly (works for both 1-on-1 and group calls!)
 			const { callManager } = require('../../services/CallManager');
 			callManager.startCall(roomId, isVideoActivated);
 			

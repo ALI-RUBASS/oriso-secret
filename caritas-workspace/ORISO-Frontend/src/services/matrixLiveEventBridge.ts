@@ -163,7 +163,34 @@ export class MatrixLiveEventBridge {
             return;
         }
 
-        console.log("✅ VALID NEW INCOMING CALL!");
+        // Check if this is a LiveKit group call (custom field)
+        const isGroupCall = content.is_group_call === true;
+        const isVideo = content.is_video !== false; // Default to video
+        
+        if (isGroupCall) {
+            console.log("✅ LIVEKIT GROUP CALL DETECTED!");
+            console.log("📞 From:", sender);
+            console.log("📞 To me:", myUserId);
+            console.log("🎥 Is Video:", isVideo);
+            
+            // Mark as processed BEFORE triggering event
+            this.processedCallInvites.add(callId);
+            console.log("✅ Marked as processed (won't process again)");
+
+            // Use CallManager directly (clean architecture!)
+            console.log("🔔 CALLING CallManager.receiveCall()");
+            console.log("═══════════════════════════════════════════════");
+            
+            callManager.receiveCall(
+                room.roomId,
+                isVideo,
+                callId,
+                sender
+            );
+            return;
+        }
+
+        console.log("✅ VALID NEW INCOMING CALL (Matrix WebRTC)!");
         console.log("📞 From:", sender);
         console.log("📞 To me:", myUserId);
         

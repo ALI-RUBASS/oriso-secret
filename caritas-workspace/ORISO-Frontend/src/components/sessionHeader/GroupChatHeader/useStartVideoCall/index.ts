@@ -6,7 +6,7 @@ export const useStartVideoCall = () => {
 
 	const onStartVideoCall = useCallback(() => {
 		console.log("═══════════════════════════════════════════════");
-		console.log("🎬 VIDEO CALL BUTTON CLICKED (GroupChatHeader)!");
+		console.log("🎬 GROUP VIDEO CALL BUTTON CLICKED!");
 		console.log("═══════════════════════════════════════════════");
 		
 		try {
@@ -21,15 +21,37 @@ export const useStartVideoCall = () => {
 				return;
 			}
 
-			console.log('📞 Starting call via CallManager');
+			// 🎯 GROUP CALLS: Open Element Call in a new popup window
+			// Element Call handles all the group call UI (grid layout, active speaker, etc.)
+			console.log('📞 Opening Element Call for group video call...');
 			
-			// Use CallManager directly (clean architecture!)
-			const { callManager } = require('../../../../services/CallManager');
-			callManager.startCall(roomId, true); // Always video for this button
+			// Get Matrix homeserver from current client
+			const matrixClientService = (window as any).matrixClientService;
+			const client = matrixClientService?.getClient();
+			const homeserverUrl = client?.getHomeserverUrl() || 'https://matrix.oriso.site';
 			
-			console.log('✅ Call initiated!');
+			// Build Element Call URL
+			// Format: https://call.element.io/{roomId}?homeserver={homeserver}
+			const elementCallUrl = `https://call.element.io/${encodeURIComponent(roomId)}?homeserver=${encodeURIComponent(homeserverUrl)}`;
+			
+			console.log('🌐 Opening Element Call URL:', elementCallUrl);
+			
+			// Open in a new popup window (sized for video calls)
+			const width = 1200;
+			const height = 800;
+			const left = (window.screen.width - width) / 2;
+			const top = (window.screen.height - height) / 2;
+			
+			window.open(
+				elementCallUrl,
+				'ElementCall',
+				`width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+			);
+			
+			console.log('✅ Element Call popup opened!');
 		} catch (error) {
 			console.error('💥 ERROR in onStartVideoCall:', error);
+			alert(`Failed to start group call: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}
 		console.log("═══════════════════════════════════════════════");
 	}, [activeSession.item.groupId, activeSession.item.matrixRoomId]);

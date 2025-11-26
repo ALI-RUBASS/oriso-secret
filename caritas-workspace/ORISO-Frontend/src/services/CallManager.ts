@@ -15,6 +15,7 @@ export interface CallData {
     roomId: string;
     isVideo: boolean;
     isIncoming: boolean;
+    isGroup?: boolean; // Flag to determine if this is a group call
     callerUserId?: string;
     matrixCall?: MatrixCall;
     state: CallState;
@@ -72,17 +73,56 @@ class CallManager {
 
     /**
      * Start an outgoing call
+     * @param roomId - Matrix room ID
+     * @param isVideo - Whether to enable video
+     * @param forceIsGroup - Force this to be treated as a group call (for group chats)
      */
-    public startCall(roomId: string, isVideo: boolean): void {
+    public startCall(roomId: string, isVideo: boolean, forceIsGroup?: boolean): void {
         console.log("═══════════════════════════════════════════════");
         console.log("🚀 CallManager.startCall()");
         console.log("═══════════════════════════════════════════════");
         console.log("   Room ID:", roomId);
         console.log("   Is Video:", isVideo);
+        console.log("   Force Group:", forceIsGroup);
 
         if (this.currentCall) {
             console.warn("⚠️  Already have an active call, cleaning up first...");
             this.endCall();
+        }
+
+        // Detect if this is a group call
+        let isGroup = forceIsGroup || false; // Use forceIsGroup if provided
+        
+        if (!forceIsGroup) {
+            // Auto-detect based on room member count
+            try {
+                const matrixClientService = (window as any).matrixClientService;
+                const client = matrixClientService?.getClient();
+                console.log(`   Matrix client available: ${!!client}`);
+                
+                if (client) {
+                    const room = client.getRoom(roomId);
+                    console.log(`   Room found: ${!!room}`);
+                    
+                    if (room) {
+                        const memberCount = room.getJoinedMemberCount();
+                        const members = room.getJoinedMembers();
+                        isGroup = memberCount > 2; // More than 2 members = group call
+                        
+                        console.log(`   ✅ Room member count: ${memberCount}`);
+                        console.log(`   ✅ Joined members:`, members.map(m => m.userId));
+                        console.log(`   ✅ Is group call (auto-detected): ${isGroup}`);
+                    } else {
+                        console.warn(`   ⚠️  Room not found in Matrix client! RoomId: ${roomId}`);
+                    }
+                } else {
+                    console.warn(`   ⚠️  Matrix client not available!`);
+                }
+            } catch (err) {
+                console.error('❌ Error detecting group call:', err);
+            }
+        } else {
+            console.log(`   ✅ Is group call (forced): ${isGroup}`);
         }
 
         const callId = `call_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -92,13 +132,58 @@ class CallManager {
             roomId,
             isVideo,
             isIncoming: false,
+            isGroup,
             state: 'connecting'
         };
 
         console.log("✅ Outgoing call created:", this.currentCall);
         console.log("═══════════════════════════════════════════════");
         
+        // Send Matrix call invite event to notify other room members
+        if (isGroup) {
+            this.sendGroupCallInvite(roomId, callId, isVideo);
+        }
+        
         this.notifyListeners();
+    }
+
+    /**
+     * Send m.call.invite event to Matrix room for group calls
+     */
+    private sendGroupCallInvite(roomId: string, callId: string, isVideo: boolean): void {
+        try {
+            const matrixClientService = (window as any).matrixClientService;
+            const client = matrixClientService?.getClient();
+            
+            if (!client) {
+                console.error('❌ Matrix client not available to send call invite');
+                return;
+            }
+
+            console.log('📤 Sending m.call.invite to Matrix room:', roomId);
+            
+            // Send m.call.invite event
+            client.sendEvent(roomId, 'm.call.invite', {
+                call_id: callId,
+                version: '1',
+                lifetime: 60000, // 60 seconds
+                offer: {
+                    type: 'offer',
+                    sdp: '' // Empty for LiveKit calls (not using Matrix WebRTC)
+                },
+                invitee: undefined, // Group call - no specific invitee
+                party_id: client.getDeviceId() || 'unknown',
+                is_group_call: true, // Custom field to indicate group call
+                is_video: isVideo
+            }).then(() => {
+                console.log('✅ m.call.invite sent successfully');
+            }).catch((err: Error) => {
+                console.error('❌ Failed to send m.call.invite:', err);
+            });
+            
+        } catch (error) {
+            console.error('❌ Error sending group call invite:', error);
+        }
     }
 
     /**
@@ -118,11 +203,53 @@ class CallManager {
             return;
         }
 
+        // Detect if this is a group call
+        // Strategy: Check if this roomId matches any active group chat session
+        let isGroup = false;
+        try {
+            // Check if we have session data that indicates this is a group chat
+            const activeSessionContext = (window as any).__activeSessionContext;
+            if (activeSessionContext && activeSessionContext.activeSession) {
+                const session = activeSessionContext.activeSession;
+                // Check if the room ID matches a group chat
+                if (session.isGroup && 
+                    (session.item.matrixRoomId === roomId || session.item.groupId === roomId)) {
+                    isGroup = true;
+                    console.log(`   ✅ Matched active group session!`);
+                }
+            }
+            
+            // Fallback: Check room member count
+            if (!isGroup) {
+                const matrixClientService = (window as any).matrixClientService;
+                const client = matrixClientService?.getClient();
+                
+                if (client) {
+                    const room = client.getRoom(roomId);
+                    if (room) {
+                        const memberCount = room.getJoinedMemberCount();
+                        // Only treat as group if MORE than 2 members (3+)
+                        isGroup = memberCount > 2;
+                        
+                        console.log(`   ✅ Room member count: ${memberCount}`);
+                        console.log(`   ✅ Is group call (by member count): ${isGroup}`);
+                    } else {
+                        console.warn(`   ⚠️  Room not found for incoming call! RoomId: ${roomId}`);
+                    }
+                }
+            }
+            
+            console.log(`   ✅ Final isGroup decision: ${isGroup}`);
+        } catch (err) {
+            console.error('❌ Error detecting group call for incoming call:', err);
+        }
+
         this.currentCall = {
             callId,
             roomId,
             isVideo,
             isIncoming: true,
+            isGroup, // Set isGroup for incoming calls
             callerUserId,
             state: 'ringing'
         };

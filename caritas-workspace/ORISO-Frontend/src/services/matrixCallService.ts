@@ -34,7 +34,9 @@ class MatrixCallService {
 
         // Listen for incoming calls
         this.client.on('Call.incoming' as any, (call: MatrixCall) => {
-            console.log('📞 Incoming call from:', call.getOpponentMember()?.name);
+            console.log('📞 Incoming Matrix WebRTC call from:', call.getOpponentMember()?.name);
+            // Note: LiveKit group calls are handled separately in matrixLiveEventBridge
+            // and won't trigger this event
             if (this.eventHandlers.onIncomingCall) {
                 this.eventHandlers.onIncomingCall(call);
             }
@@ -52,7 +54,19 @@ class MatrixCallService {
         }
 
         if (this.activeCall) {
-            throw new Error('Call already in progress');
+            console.warn('⚠️  Active call exists, force clearing it...');
+            try {
+                // Just stop the tracks, don't hangup (which triggers events)
+                const localFeed = this.activeCall.localUsermediaFeed;
+                if (localFeed) {
+                    localFeed.stream?.getTracks().forEach(track => track.stop());
+                }
+            } catch (err) {
+                console.error('❌ Error stopping old tracks:', err);
+            }
+            // Force clear the activeCall reference
+            this.activeCall = null;
+            console.log('✅ Old call reference cleared');
         }
 
         try {
