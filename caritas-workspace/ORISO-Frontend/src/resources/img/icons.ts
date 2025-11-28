@@ -27,6 +27,7 @@ export { ReactComponent as FileImageIcon } from '../../resources/img/icons/file-
 export { ReactComponent as FilePdfIcon } from '../../resources/img/icons/file-pdf.svg';
 export { ReactComponent as FileXlsIcon } from '../../resources/img/icons/file-xls.svg';
 export { ReactComponent as GroupChatIcon } from '../../resources/img/icons/speech-bubble.svg';
+export { ReactComponent as GroupChatAvatarIcon } from '../../resources/img/icons/group-chat-avatar.svg';
 export { ReactComponent as GroupChatInfoIcon } from '../../resources/img/icons/i.svg';
 export { ReactComponent as HidePasswordIcon } from '../../resources/img/icons/eye-closed.svg';
 export { ReactComponent as InboxIcon } from '../../resources/img/icons/inbox.svg';

@@ -10,7 +10,7 @@ import './select.react.styles';
 import './select.styles';
 import { useResponsive } from '../../hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useRef, useEffect } from 'react';
 
 export interface SelectOption {
 	value: string;
@@ -177,11 +177,11 @@ const colourStyles = (
 		'fontWeight': 'normal',
 		...(menuPlacement === MENUPLACEMENT_RIGHT
 			? {
-					bottom: '0',
-					left: '100%',
-					top: 'auto',
+					top: '0', // Align with top of button
+					left: '100%', // Position to the right of button
+					bottom: 'auto',
 					marginLeft: '16px',
-					marginBottom: 0,
+					marginTop: 0,
 					width: 'auto'
 				}
 			: {
@@ -202,8 +202,9 @@ const colourStyles = (
 			...(menuPlacement === MENUPLACEMENT_RIGHT
 				? {
 						left: '0',
-						bottom: '5%',
-						top: 'auto',
+						top: 'var(--arrow-top, 50%)', // Align with button center (calculated dynamically)
+						bottom: 'auto',
+						transform: 'translateY(-50%)', // Center the arrow
 						borderTop: '10px solid transparent',
 						borderBottom: '10px solid transparent',
 						borderLeft: 'none',
@@ -241,8 +242,8 @@ const colourStyles = (
 			...(menuPlacement === MENUPLACEMENT_RIGHT
 				? {
 						left: '0',
+						top: '16px', // Position arrow at top of menu
 						bottom: '5%',
-						top: 'auto',
 						borderTop: '10px solid transparent',
 						borderBottom: '10px solid transparent',
 						borderLeft: 'none',
@@ -412,8 +413,50 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 		}
 	}, [props.menuPlacement]);
 
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const selectRef = useRef<any>(null);
+
+	// Position menu to the right when MENUPLACEMENT_RIGHT is used
+	useEffect(() => {
+		if (props.menuPlacement === MENUPLACEMENT_RIGHT && wrapperRef.current) {
+			const positionMenu = () => {
+				const menu = document.querySelector('.select__input__menu') as HTMLElement;
+				const wrapper = wrapperRef.current;
+				if (menu && wrapper) {
+					const control = wrapper.querySelector('.select__input__control') as HTMLElement;
+					if (control) {
+						const rect = control.getBoundingClientRect();
+						menu.style.position = 'fixed';
+						menu.style.left = `${rect.right + 16}px`;
+						menu.style.top = `${rect.top}px`;
+						menu.style.right = 'auto';
+						menu.style.bottom = 'auto';
+						menu.style.transform = 'none';
+						menu.style.marginTop = '0';
+						menu.style.marginLeft = '0';
+					}
+				}
+			};
+
+			// Use MutationObserver to watch for menu appearance
+			const observer = new MutationObserver(() => {
+				positionMenu();
+			});
+
+			observer.observe(document.body, {
+				childList: true,
+				subtree: true
+			});
+
+			// Also try immediately
+			setTimeout(positionMenu, 0);
+
+			return () => observer.disconnect();
+		}
+	}, [props.menuPlacement]);
+
 	return (
-		<div className={clsx(props.className, 'select__wrapper')}>
+		<div ref={wrapperRef} className={clsx(props.className, 'select__wrapper')}>
 			<Select
 				id={props.id}
 				className={`select__input ${
@@ -433,6 +476,7 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 						: components.IndicatorSeparator,
 					MultiValueRemove: CustomMultiValueRemove
 				}}
+				menuPortalTarget={props.menuPlacement === MENUPLACEMENT_RIGHT ? document.body : undefined}
 				value={props.defaultValue ? props.defaultValue : null}
 				defaultValue={props.defaultValue ? props.defaultValue : null}
 				onChange={props.handleDropdownSelect}
@@ -452,8 +496,51 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 				)}
 				onKeyDown={(e) => (props.onKeyDown ? props.onKeyDown(e) : null)}
 				tabIndex={props.isInsideMenu ? -1 : 0}
-				ref={props.selectRef}
+				ref={(ref) => {
+					selectRef.current = ref;
+					if (props.selectRef) {
+						if (typeof props.selectRef === 'function') {
+							props.selectRef(ref);
+						} else {
+							props.selectRef.current = ref;
+						}
+					}
+				}}
 				openMenuOnFocus={props.isInsideMenu ? true : false}
+				onMenuOpen={() => {
+					if (props.menuPlacement === MENUPLACEMENT_RIGHT) {
+						setTimeout(() => {
+							const menu = document.querySelector('.select__input__menu') as HTMLElement;
+							const wrapper = wrapperRef.current;
+							if (menu && wrapper) {
+								const control = wrapper.querySelector('.select__input__control') as HTMLElement;
+								if (control) {
+									const rect = control.getBoundingClientRect();
+									// Position menu slightly above the button (8px above)
+									const topOffset = -8;
+									const menuTop = rect.top + topOffset;
+									const buttonCenter = rect.top + (rect.height / 2);
+									
+									menu.style.position = 'fixed';
+									menu.style.left = `${rect.right + 16}px`;
+									menu.style.top = `${menuTop}px`;
+									menu.style.right = 'auto';
+									menu.style.bottom = 'auto';
+									menu.style.transform = 'none';
+									menu.style.marginTop = '0';
+									menu.style.marginLeft = '0';
+									
+									// Position arrow to align with button center
+									const arrowOffset = buttonCenter - menuTop;
+									const menuElement = menu as HTMLElement;
+									if (menuElement) {
+										menuElement.style.setProperty('--arrow-top', `${arrowOffset}px`);
+									}
+								}
+							}
+						}, 0);
+					}
+				}}
 				closeMenuOnSelect={true}
 				onMenuClose={() => {
 					if (props.isInsideMenu) {

@@ -76,7 +76,7 @@ export const ResizableHandle: React.FC<ResizableHandleProps> = ({
 				right: '-2px',
 				top: 0,
 				bottom: 0,
-				width: '3px', // Wider for easier grabbing
+				width: '1px', // Wider for easier grabbing
 				cursor: 'col-resize',
 				backgroundColor: isDragging ? 'rgba(80, 80, 80, 0.2)' : 'rgba(80, 80, 80, 0.1)',
 				transition: isDragging ? 'none' : 'background-color 0.15s ease',

@@ -8,7 +8,6 @@ import {
 	MILLISECONDS_PER_SECOND
 } from '../../utils/dateHelpers';
 import { UserAvatar } from '../message/UserAvatar';
-import { GroupChatAvatarIcon } from '../../resources/img/icons';
 import { SESSION_LIST_TAB } from '../session/sessionHelpers';
 import {
 	AUTHORITIES,
@@ -327,7 +326,6 @@ export const SessionListItemComponent = ({
 				onClick={handleOnClick}
 				className={clsx(
 					'sessionsListItem',
-					'sessionsListItem--groupChat',
 					isChatActive && 'sessionsListItem--active'
 				)}
 				data-group-id={activeSession.rid ? activeSession.rid : ''}
@@ -349,8 +347,13 @@ export const SessionListItemComponent = ({
 					</div>
 					</div>
 					<div className="sessionsListItem__row">
-						<div className="sessionsListItem__icon sessionsListItem__icon--groupChat">
-							<GroupChatAvatarIcon />
+						<div className="sessionsListItem__icon">
+							<UserAvatar
+								username={activeSession.user?.username || activeSession.consultant?.username || 'User'}
+								displayName={activeSession.user?.username || activeSession.consultant?.displayName}
+								userId={activeSession.user?.username || activeSession.consultant?.id || 'unknown'}
+								size="32px"
+							/>
 						</div>
 						<div
 							className={clsx(

@@ -76,6 +76,31 @@ $icon-size-small: 16px;
 		cursor: pointer;
 	}
 
+	&--groupChat {
+		.sessionsListItem__content {
+			background-color: #fff5f5; // Very light red background for group chats
+			border: 1px solid #ffcccc; // Thin red border for group chats
+		}
+
+		&--active {
+			.sessionsListItem__content {
+				@include breakpoint($fromLarge) {
+					background-color: #ffe5e5; // Slightly darker light red when active
+					border-color: #ff9999; // Slightly darker red border when active
+				}
+			}
+		}
+
+		&:hover {
+			.sessionsListItem__content {
+				@include breakpoint($fromLarge) {
+					background-color: #ffe5e5; // Slightly darker light red on hover
+					border-color: #ff9999; // Slightly darker red border on hover
+				}
+			}
+		}
+	}
+
 	&__content {
 		overflow: auto;
 		width: 100%;
@@ -175,6 +200,13 @@ $icon-size-small: 16px;
 		svg {
 			width: $icon-size;
 			height: $icon-size;
+		}
+
+		&--groupChat {
+			svg {
+				width: 32px;
+				height: 32px;
+			}
 		}
 	}
 

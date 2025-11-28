@@ -337,6 +337,7 @@ $profile-footer-justify-content: center !default;
 
 	&__item {
 		width: 100%;
+		padding-top: 16px;
 
 		@include breakpoint($fromLarge) {
 			width: calc(50% - #{$grid-base-three});
