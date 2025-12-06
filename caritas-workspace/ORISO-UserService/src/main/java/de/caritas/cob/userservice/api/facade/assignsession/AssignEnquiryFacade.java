@@ -277,6 +277,22 @@ public class AssignEnquiryFacade {
                       "Consultant {} successfully joined existing room {} (all messages preserved)",
                       consultant.getUsername(),
                       existingRoomId);
+
+                  // Remove agency service account from room (now only consultant + user remain)
+                  boolean agencyRemoved =
+                      matrixSynapseService.removeUserFromRoom(
+                          existingRoomId, agencyCredentials.getMatrixUserId(), agencyToken);
+                  if (agencyRemoved) {
+                    log.info(
+                        "Removed agency service account {} from room {} (only consultant + user remain)",
+                        agencyCredentials.getMatrixUserId(),
+                        existingRoomId);
+                  } else {
+                    log.warn(
+                        "Failed to remove agency service account {} from room {}",
+                        agencyCredentials.getMatrixUserId(),
+                        existingRoomId);
+                  }
                 } else {
                   log.warn(
                       "Consultant {} failed to join existing room {}",
