@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Link, generatePath } from 'react-router-dom';
 import {
 	AUTHORITIES,
@@ -21,7 +21,8 @@ import { mobileListView } from '../../app/navigationHandler';
 import {
 	BackIcon,
 	CameraOnIcon,
-	GroupChatInfoIcon
+	GroupChatInfoIcon,
+	GroupChatAvatarIcon
 } from '../../../resources/img/icons';
 import { ReactComponent as VideoCallIcon } from '../../../resources/img/illustrations/camera.svg';
 import { ReactComponent as CallOnIcon } from '../../../resources/img/icons/call-on.svg';
@@ -35,8 +36,9 @@ import { BanUser, BanUserOverlay } from '../../banUser/BanUser';
 import { Tag } from '../../tag/Tag';
 import { BUTTON_TYPES, Button, ButtonItem } from '../../button/Button';
 import { useAppConfig } from '../../../hooks/useAppConfig';
-import { RocketChatUsersOfRoomContext } from '../../../globalState/provider/RocketChatUsersOfRoomProvider';
 import { SessionItemInterface } from '../../../globalState/interfaces';
+import { matrixClientService } from '../../../services/matrixClientService';
+import { RoomMember } from 'matrix-js-sdk';
 
 interface GroupChatHeaderProps {
 	hasUserInitiatedStopOrLeaveRequest: React.MutableRefObject<boolean>;
@@ -55,11 +57,125 @@ export const GroupChatHeader = ({
 		useState<boolean>(false);
 	const { t } = useTranslation(['common', 'consultingTypes', 'agencies']);
 	const { activeSession } = useContext(ActiveSessionContext);
-	// MATRIX MIGRATION: RocketChatUsersOfRoomContext may be null for Matrix rooms, use fallback
-	const rcUsersContext = useContext(RocketChatUsersOfRoomContext);
-	const users = rcUsersContext?.users || [];
-	const moderators = rcUsersContext?.moderators || [];
 	const { userData } = useContext(UserDataContext);
+	
+	// MATRIX: Get room members from Matrix client
+	const [matrixMembers, setMatrixMembers] = useState<RoomMember[]>([]);
+	const [isLoadingMembers, setIsLoadingMembers] = useState<boolean>(true);
+	const matrixRoomId = activeSession.item.matrixRoomId || activeSession.item.groupId;
+	
+	useEffect(() => {
+		console.log('🔍 GroupChatHeader: Fetching Matrix members for room:', matrixRoomId);
+		setIsLoadingMembers(true);
+		
+		if (!matrixRoomId) {
+			console.log('❌ GroupChatHeader: No matrixRoomId found');
+			setMatrixMembers([]);
+			setIsLoadingMembers(false);
+			return;
+		}
+		
+		// Try to get Matrix client (from global window or imported service)
+		const getClient = () => {
+			const globalService = (window as any).matrixClientService;
+			if (globalService && globalService.getClient()) {
+				return globalService.getClient();
+			}
+			return matrixClientService.getClient();
+		};
+		
+		// Wait for Matrix client to be available (retry up to 20 times = 10 seconds)
+		let retryCount = 0;
+		const maxRetries = 20;
+		
+		const tryLoadMembers = () => {
+			const client = getClient();
+			
+			if (!client) {
+				retryCount++;
+				if (retryCount < maxRetries) {
+					console.log(`⏳ GroupChatHeader: Matrix client not ready yet, retrying... (${retryCount}/${maxRetries})`);
+					setTimeout(tryLoadMembers, 500);
+					return;
+				} else {
+					console.log('❌ GroupChatHeader: Matrix client not available after retries');
+					setMatrixMembers([]);
+					setIsLoadingMembers(false);
+					return;
+				}
+			}
+			
+			console.log('✅ GroupChatHeader: Matrix client found, getting room...');
+			const room = client.getRoom(matrixRoomId);
+			
+			if (!room) {
+				console.log('⏳ GroupChatHeader: Room not found yet, waiting for sync...');
+				console.log('📋 Available rooms:', client.getRooms().map((r: any) => r.roomId));
+				
+				// Wait for room to appear (up to 10 seconds)
+				let roomRetryCount = 0;
+				const maxRoomRetries = 20;
+				
+				const tryGetRoom = () => {
+					const updatedRoom = client.getRoom(matrixRoomId);
+					if (updatedRoom) {
+						loadMembers(updatedRoom);
+					} else {
+						roomRetryCount++;
+						if (roomRetryCount < maxRoomRetries) {
+							setTimeout(tryGetRoom, 500);
+						} else {
+							console.log('❌ GroupChatHeader: Room not found after waiting:', matrixRoomId);
+							setMatrixMembers([]);
+							setIsLoadingMembers(false);
+						}
+					}
+				};
+				
+				setTimeout(tryGetRoom, 500);
+				return;
+			}
+			
+			loadMembers(room);
+		};
+		
+		const loadMembers = (room: any) => {
+			// Get joined members
+			const members = room.getJoinedMembers();
+			console.log('✅ GroupChatHeader: Found', members?.length || 0, 'members:', members?.map((m: any) => m.userId || m.name));
+			setMatrixMembers(members || []);
+			setIsLoadingMembers(false);
+			
+			// Poll for member changes every 5 seconds
+			const intervalId = setInterval(() => {
+				const client = getClient();
+				if (client) {
+					const updatedRoom = client.getRoom(matrixRoomId);
+					if (updatedRoom) {
+						const updatedMembers = updatedRoom.getJoinedMembers();
+						if (updatedMembers?.length !== matrixMembers.length) {
+							console.log('🔄 GroupChatHeader: Members updated:', updatedMembers?.length);
+							setMatrixMembers(updatedMembers || []);
+						}
+					}
+				}
+			}, 5000);
+			
+			// Store interval ID for cleanup
+			(window as any).__groupChatHeaderInterval = intervalId;
+		};
+		
+		// Start trying to load members
+		tryLoadMembers();
+		
+		return () => {
+			const intervalId = (window as any).__groupChatHeaderInterval;
+			if (intervalId) {
+				clearInterval(intervalId);
+				delete (window as any).__groupChatHeaderInterval;
+			}
+		};
+	}, [matrixRoomId, matrixMembers.length]);
 	const { type, path: listPath } = useContext(SessionTypeContext);
 	const sessionListTab = useSearchParam<SESSION_LIST_TAB>('sessionListTab');
 	const sessionView = getViewPathForType(type);
@@ -225,10 +341,74 @@ export const GroupChatHeader = ({
 						<Link
 							to={`/sessions/consultant/${sessionView}/${activeSession.item.groupId}/${activeSession.item.id}/groupChatInfo${sessionTabPath}`}
 						>
-							<h3>{typeof activeSession.item.topic === 'string' ? activeSession.item.topic : activeSession.item.topic?.name || ''}</h3>
+							<div className="sessionInfo__titleRow">
+								<div className="sessionInfo__groupIcon">
+									<GroupChatAvatarIcon />
+								</div>
+								<h3>{typeof activeSession.item.topic === 'string' ? activeSession.item.topic : activeSession.item.topic?.name || ''}</h3>
+							</div>
+							{/* Matrix room participants */}
+							{isLoadingMembers ? (
+								<div className="sessionInfo__participants sessionInfo__participants--loading">
+									<div className="sessionInfo__participants__skeleton"></div>
+								</div>
+							) : matrixMembers.length > 0 ? (
+								<div className="sessionInfo__participants">
+									{matrixMembers
+										.filter(member => {
+											// Filter out system users and current user if needed
+											const userId = member.userId || '';
+											return !userId.includes('@system') && !userId.includes('@caritas.local');
+										})
+										.map((member, index, filteredMembers) => {
+											// Extract display name from userId (format: @username:domain)
+											const userId = member.userId || '';
+											const displayName = member.name || userId.split(':')[0]?.replace('@', '') || userId;
+											return (
+												<span key={member.userId || index} className="sessionInfo__participant">
+													{decodeUsername(displayName)}
+													{index < filteredMembers.length - 1 && ', '}
+												</span>
+											);
+										})}
+								</div>
+							) : null}
 						</Link>
 					) : (
-						<h3>{typeof activeSession.item.topic === 'string' ? activeSession.item.topic : activeSession.item.topic?.name || ''}</h3>
+						<>
+							<div className="sessionInfo__titleRow">
+								<div className="sessionInfo__groupIcon">
+									<GroupChatAvatarIcon />
+								</div>
+								<h3>{typeof activeSession.item.topic === 'string' ? activeSession.item.topic : activeSession.item.topic?.name || ''}</h3>
+							</div>
+							{/* Matrix room participants */}
+							{isLoadingMembers ? (
+								<div className="sessionInfo__participants sessionInfo__participants--loading">
+									<div className="sessionInfo__participants__skeleton"></div>
+								</div>
+							) : matrixMembers.length > 0 ? (
+								<div className="sessionInfo__participants">
+									{matrixMembers
+										.filter(member => {
+											// Filter out system users
+											const userId = member.userId || '';
+											return !userId.includes('@system') && !userId.includes('@caritas.local');
+										})
+										.map((member, index, filteredMembers) => {
+											// Extract display name from userId (format: @username:domain)
+											const userId = member.userId || '';
+											const displayName = member.name || userId.split(':')[0]?.replace('@', '') || userId;
+											return (
+												<span key={member.userId || index} className="sessionInfo__participant">
+													{decodeUsername(displayName)}
+													{index < filteredMembers.length - 1 && ', '}
+												</span>
+											);
+										})}
+								</div>
+							) : null}
+						</>
 					)}
 				</div>
 
