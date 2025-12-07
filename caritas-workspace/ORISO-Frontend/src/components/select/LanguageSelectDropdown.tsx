@@ -6,11 +6,11 @@ import { CloseCircle } from '../../resources/img/icons';
 import { ReactComponent as ArrowDownIcon } from '../../resources/img/icons/arrow-down-light.svg';
 import { ReactComponent as ArrowUpIcon } from '../../resources/img/icons/arrow-up-light.svg';
 import { Text } from '../text/Text';
-import './select.react.styles';
-import './select.styles';
+import './select2.react.styles';
+import './select2.styles';
 import { useResponsive } from '../../hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useRef, useEffect } from 'react';
 
 export interface SelectOption {
 	value: string;
@@ -74,10 +74,12 @@ const colourStyles = (
 		multiValueLabel,
 		multiValueRemove,
 		indicatorSeparator,
+		valueContainer,
 		...overrides
 	}: defaultStyles
 ) => ({
 	control: (styles, state) => {
+		const isMulti = state.selectProps.isMulti;
 		return {
 			...styles,
 			'backgroundColor': 'white',
@@ -85,7 +87,11 @@ const colourStyles = (
 				? '2px solid #3F373F'
 				: '1px solid #8C878C',
 			'borderRadius': undefined,
-			'height': '50px',
+			// ✅ FIXED BIG BOX for multi-select (like textarea)
+			'minHeight': isMulti ? '200px' : '50px',
+			'height': isMulti ? '200px' : '50px', // FIXED 200px height (not flexible!)
+			'maxHeight': isMulti ? '200px' : '50px',
+			'overflowY': 'visible',
 			'outline': '0',
 			'padding': state.isFocused ? '0 11px' : '0 12px',
 			'color': '#3F373F',
@@ -97,7 +103,7 @@ const colourStyles = (
 					: '1px solid #3F373F',
 				padding: state.isFocused ? '0 11px' : '0 12px'
 			},
-			'.select__inputLabel': {
+			'.language-select__inputLabel': {
 				fontSize: state.isFocused || state.hasValue ? '12px' : '16px',
 				top: state.isFocused || state.hasValue ? '0px' : '14px',
 				transition: 'font-size .5s, top .5s',
@@ -115,7 +121,8 @@ const colourStyles = (
 		...(singleValue?.(styles, state) ?? {})
 	}),
 	input: (styles, state) => {
-		return state.isMulti
+		const isMulti = state.selectProps.isMulti;
+		return isMulti
 			? {
 					...styles,
 					...(input?.(styles, state) ?? {})
@@ -126,6 +133,20 @@ const colourStyles = (
 					cursor: 'pointer',
 					...(input?.(styles, state) ?? {})
 				};
+	},
+	valueContainer: (styles, state) => {
+		const isMulti = state.selectProps.isMulti;
+		return {
+			...styles,
+			// ✅ FIXED BIG BOX - valueContainer fills the 200px control
+			flexWrap: isMulti ? 'wrap' : 'nowrap',
+			height: isMulti ? '170px' : 'auto', // Fixed height to fill control
+			maxHeight: isMulti ? '170px' : 'none',
+			overflowY: isMulti ? 'auto' : 'visible',
+			padding: isMulti ? '24px 8px 8px 8px' : '8px', // ✅ Extra top padding for label
+			alignContent: 'flex-start', // Align pills to top
+			...(valueContainer?.(styles, state) ?? {})
+		};
 	},
 	option: (styles, state) => {
 		return {
@@ -156,11 +177,11 @@ const colourStyles = (
 		'fontWeight': 'normal',
 		...(menuPlacement === MENUPLACEMENT_RIGHT
 			? {
-					bottom: '0',
-					left: '100%',
-					top: 'auto',
+					top: '0', // Align with top of button
+					left: '100%', // Position to the right of button
+					bottom: 'auto',
 					marginLeft: '16px',
-					marginBottom: 0,
+					marginTop: 0,
 					width: 'auto'
 				}
 			: {
@@ -181,8 +202,9 @@ const colourStyles = (
 			...(menuPlacement === MENUPLACEMENT_RIGHT
 				? {
 						left: '0',
-						bottom: '5%',
-						top: 'auto',
+						top: 'var(--arrow-top, 50%)', // Align with button center (calculated dynamically)
+						bottom: 'auto',
+						transform: 'translateY(-50%)', // Center the arrow
 						borderTop: '10px solid transparent',
 						borderBottom: '10px solid transparent',
 						borderLeft: 'none',
@@ -220,8 +242,8 @@ const colourStyles = (
 			...(menuPlacement === MENUPLACEMENT_RIGHT
 				? {
 						left: '0',
+						top: '16px', // Position arrow at top of menu
 						bottom: '5%',
-						top: 'auto',
 						borderTop: '10px solid transparent',
 						borderBottom: '10px solid transparent',
 						borderLeft: 'none',
@@ -262,7 +284,7 @@ const colourStyles = (
 					'&:hover': {
 						'border': '1px solid rgba(0,0,0,0.2) !important',
 						'backgroundColor': 'transparent !important',
-						'& > .select__input__multi-value__label': {
+						'& > .language-select__input__multi-value__label': {
 							color: 'rgba(0,0,0,0.8) !important'
 						}
 					},
@@ -329,20 +351,20 @@ const colourStyles = (
 	...overrides
 });
 
-export const SelectDropdown = (props: SelectDropdownItem) => {
+export const LanguageSelectDropdown = (props: SelectDropdownItem) => {
 	const { t: translate } = useTranslation();
 	const { fromL } = useResponsive();
 
 	const IconOption = (props) => (
-		<components.Option {...props} className="select__option">
-			<span className="select__option__icon">{props.data.iconLabel}</span>
-			<p className="select__option__label">{props.data.label}</p>
+		<components.Option {...props} className="language-select__option">
+			<span className="language-select__option__icon">{props.data.iconLabel}</span>
+			<p className="language-select__option__label">{props.data.label}</p>
 		</components.Option>
 	);
 
 	const IconDropdown = (props) => (
 		<components.DropdownIndicator {...props}>
-			<span id="selectIcon" className="select__input__iconWrapper">
+			<span id="selectIcon" className="language-select__input__iconWrapper">
 				{props.selectProps.menuIsOpen ? (
 					<ArrowUpIcon
 						title={translate('app.close')}
@@ -362,9 +384,9 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 
 	const currentSelectInputLabel = props.selectInputLabel;
 	const CustomValueContainer = ({ children, ...props }) => (
-		<components.ValueContainer {...props} className="select__inputWrapper">
+		<components.ValueContainer {...props} className="language-select__inputWrapper">
 			{React.Children.map(children, (child) => child)}
-			<label className="select__inputLabel">
+			<label className="language-select__inputLabel">
 				{translate(currentSelectInputLabel)}
 			</label>
 		</components.ValueContainer>
@@ -391,14 +413,56 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 		}
 	}, [props.menuPlacement]);
 
+	const wrapperRef = useRef<HTMLDivElement>(null);
+	const selectRef = useRef<any>(null);
+
+	// Position menu to the right when MENUPLACEMENT_RIGHT is used
+	useEffect(() => {
+		if (props.menuPlacement === MENUPLACEMENT_RIGHT && wrapperRef.current) {
+			const positionMenu = () => {
+				const menu = document.querySelector('.language-select__input__menu') as HTMLElement;
+				const wrapper = wrapperRef.current;
+				if (menu && wrapper) {
+					const control = wrapper.querySelector('.language-select__input__control') as HTMLElement;
+					if (control) {
+						const rect = control.getBoundingClientRect();
+						menu.style.position = 'fixed';
+						menu.style.left = `${rect.right + 16}px`;
+						menu.style.top = `${rect.top}px`;
+						menu.style.right = 'auto';
+						menu.style.bottom = 'auto';
+						menu.style.transform = 'none';
+						menu.style.marginTop = '0';
+						menu.style.marginLeft = '0';
+					}
+				}
+			};
+
+			// Use MutationObserver to watch for menu appearance
+			const observer = new MutationObserver(() => {
+				positionMenu();
+			});
+
+			observer.observe(document.body, {
+				childList: true,
+				subtree: true
+			});
+
+			// Also try immediately
+			setTimeout(positionMenu, 0);
+
+			return () => observer.disconnect();
+		}
+	}, [props.menuPlacement]);
+
 	return (
-		<div className={clsx(props.className, 'select__wrapper')}>
+		<div ref={wrapperRef} className={clsx(props.className, 'language-select__wrapper')}>
 			<Select
 				id={props.id}
-				className={`select__input ${
-					props.hasError ? 'select__input--error' : ''
+				className={`language-select__input ${
+					props.hasError ? 'language-select__input--error' : ''
 				}`}
-				classNamePrefix="select__input"
+				classNamePrefix="language-select__input"
 				components={{
 					Option: props.useIconOption
 						? IconOption
@@ -412,6 +476,7 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 						: components.IndicatorSeparator,
 					MultiValueRemove: CustomMultiValueRemove
 				}}
+				menuPortalTarget={props.menuPlacement === MENUPLACEMENT_RIGHT ? document.body : undefined}
 				value={props.defaultValue ? props.defaultValue : null}
 				defaultValue={props.defaultValue ? props.defaultValue : null}
 				onChange={props.handleDropdownSelect}
@@ -431,8 +496,51 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 				)}
 				onKeyDown={(e) => (props.onKeyDown ? props.onKeyDown(e) : null)}
 				tabIndex={props.isInsideMenu ? -1 : 0}
-				ref={props.selectRef}
+				ref={(ref) => {
+					selectRef.current = ref;
+					if (props.selectRef) {
+						if (typeof props.selectRef === 'function') {
+							props.selectRef(ref);
+						} else {
+							props.selectRef.current = ref;
+						}
+					}
+				}}
 				openMenuOnFocus={props.isInsideMenu ? true : false}
+				onMenuOpen={() => {
+					if (props.menuPlacement === MENUPLACEMENT_RIGHT) {
+						setTimeout(() => {
+							const menu = document.querySelector('.select__input__menu') as HTMLElement;
+							const wrapper = wrapperRef.current;
+							if (menu && wrapper) {
+								const control = wrapper.querySelector('.select__input__control') as HTMLElement;
+								if (control) {
+									const rect = control.getBoundingClientRect();
+									// Position menu slightly above the button (8px above)
+									const topOffset = -8;
+									const menuTop = rect.top + topOffset;
+									const buttonCenter = rect.top + (rect.height / 2);
+									
+									menu.style.position = 'fixed';
+									menu.style.left = `${rect.right + 16}px`;
+									menu.style.top = `${menuTop}px`;
+									menu.style.right = 'auto';
+									menu.style.bottom = 'auto';
+									menu.style.transform = 'none';
+									menu.style.marginTop = '0';
+									menu.style.marginLeft = '0';
+									
+									// Position arrow to align with button center
+									const arrowOffset = buttonCenter - menuTop;
+									const menuElement = menu as HTMLElement;
+									if (menuElement) {
+										menuElement.style.setProperty('--arrow-top', `${arrowOffset}px`);
+									}
+								}
+							}
+						}, 0);
+					}
+				}}
 				closeMenuOnSelect={true}
 				onMenuClose={() => {
 					if (props.isInsideMenu) {
@@ -445,7 +553,7 @@ export const SelectDropdown = (props: SelectDropdownItem) => {
 				}}
 			/>
 			{props.hasError && (
-				<div className="select__error">
+				<div className="language-select__error">
 					<Text text={props.errorMessage} type="infoSmall" />
 				</div>
 			)}

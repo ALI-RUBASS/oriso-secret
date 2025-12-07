@@ -8,9 +8,9 @@ import { apiPatchUserData } from '../../api/apiPatchUserData';
 import {
 	MENUPLACEMENT,
 	MENUPLACEMENT_BOTTOM,
-	SelectDropdown,
 	SelectDropdownItem
 } from '../select/SelectDropdown';
+import { LanguageSelectDropdown } from '../select/LanguageSelectDropdown';
 import { setValueInCookie } from '../sessionCookie/accessSessionCookie';
 import LanguageIcon from '@mui/icons-material/Language';
 
@@ -188,7 +188,7 @@ export const LocaleSwitch: React.FC<LocaleSwitchProp> = ({
 				vertical ? 'localeSwitch--vertical' : ''
 			}`}
 		>
-			<SelectDropdown {...languageSelectDropdown} />
+			<LanguageSelectDropdown {...languageSelectDropdown} />
 		</div>
 	);
 };
