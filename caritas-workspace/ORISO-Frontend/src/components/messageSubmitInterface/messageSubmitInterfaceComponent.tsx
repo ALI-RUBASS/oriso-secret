@@ -945,6 +945,38 @@ export const MessageSubmitInterfaceComponent = ({
 		userData
 	]);
 
+	// Key binding function for Draft.js to handle Ctrl+Enter / Cmd+Enter
+	// Only returns a command when modifier keys are pressed, otherwise returns undefined
+	// to let Draft.js handle Enter normally (create new line)
+	const keyBindingFn = useCallback((e: React.KeyboardEvent) => {
+		// Handle Ctrl+Enter (Windows/Linux) or Cmd+Enter (Mac) to send message
+		if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+			return 'send-message';
+		}
+		// Return undefined (not null) to let Draft.js handle Enter normally
+		return undefined;
+	}, []);
+
+	// Enhanced handleEditorKeyCommand to handle send message shortcut
+	const enhancedHandleEditorKeyCommand = useCallback(
+		(command) => {
+			// Handle send message command (Ctrl+Enter / Cmd+Enter)
+			if (command === 'send-message') {
+				if (!uploadProgress && !isRequestInProgress) {
+					handleButtonClick();
+				}
+				return 'handled';
+			}
+			// If command is null/undefined, return 'not-handled' to let Draft.js handle Enter normally
+			if (command == null) {
+				return 'not-handled';
+			}
+			// For all other commands, delegate to original handler
+			return handleEditorKeyCommand(command);
+		},
+		[handleEditorKeyCommand, uploadProgress, isRequestInProgress, handleButtonClick]
+	);
+
 	const handleAttachmentSelect = useCallback(() => {
 		const attachmentInput: any = attachmentInputRef.current;
 		attachmentInput.click();
@@ -1166,7 +1198,8 @@ export const MessageSubmitInterfaceComponent = ({
 									editorState={editorState}
 									onChange={handleEditorChange}
 									readOnly={!draftLoaded || !!attachmentSelected || !!uploadProgress}
-									handleKeyCommand={handleEditorKeyCommand}
+									handleKeyCommand={enhancedHandleEditorKeyCommand}
+									keyBindingFn={keyBindingFn}
 									placeholder={attachmentSelected ? '' : placeholder}
 									stripPastedStyles={true}
 									spellCheck={true}
