@@ -208,11 +208,13 @@ $inputBoxShadow: inset 0 2px 0 0 #ffffff;
 
 			&--deactivated,
 			&--deactivated:hover {
-				cursor: unset;
-				background-color: $form-input-border;
+				cursor: not-allowed;
+				pointer-events: none;
+				background-color: var(--skin-color-primary, $primary);
+				opacity: 0.4;
 
 				svg rect {
-					fill: $form-primary;
+					fill: var(--text-color-contrast-switch, $white);
 				}
 			}
 		}

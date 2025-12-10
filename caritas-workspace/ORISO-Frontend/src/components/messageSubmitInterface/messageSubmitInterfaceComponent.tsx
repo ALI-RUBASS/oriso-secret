@@ -1337,9 +1337,13 @@ export const MessageSubmitInterfaceComponent = ({
 								handleSendButton={handleButtonClick}
 								clicked={isRequestInProgress}
 								deactivated={
-									uploadProgress || isRequestInProgress
+									!attachmentSelected && 
+									(!getTypedMarkdownMessage() || getTypedMarkdownMessage().trim().length === 0)
 								}
-								isEmpty={!getTypedMarkdownMessage() || getTypedMarkdownMessage().trim().length === 0}
+								isEmpty={
+									!attachmentSelected && 
+									(!getTypedMarkdownMessage() || getTypedMarkdownMessage().trim().length === 0)
+								}
 							/>
 						</div>
 					</div>
