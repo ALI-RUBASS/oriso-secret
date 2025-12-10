@@ -32,24 +32,13 @@ export const MessageDisplayName = ({
 	const getUsernameWithPrefix = useCallback(() => {
 		if (isMyMessage) {
 			return translate('message.isMyMessage.name');
-		} else if (
-			(!isMyMessage && isUser) ||
-			(!subscriberIsModerator && isUser)
-		) {
-			return displayName || username;
 		} else {
-			return subscriberIsModerator
-				? translate('session.groupChat.consultant.prefix') +
-						(displayName || username)
-				: translate('session.consultant.prefix') +
-						(displayName || username);
+			// Just show username/displayName without role prefix
+			return displayName || username;
 		}
 	}, [
 		displayName,
 		isMyMessage,
-		isUser,
-		subscriberIsModerator,
-		translate,
 		username
 	]);
 
