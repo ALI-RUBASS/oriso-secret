@@ -422,6 +422,7 @@
 			"is_decrypting": "File is being decrypted",
 			"save": "Download file"
 		},
+		"title": "End-to-end encryption is enabled",
 		"hint": "Your messages are encrypted end-to-end. That means no one outside this chat can read the messages. Not even the online consulting platform.",
 		"inProgress": {
 			"confirm": "Please wait until the encryption is finished!",
@@ -499,8 +500,12 @@
 				"format": "format text",
 				"placeholder": {
 					"asker": "Write us what moves you.",
+					"askerAfterFirstMessage": "Forgot something? Just send another message?",
 					"consultant": "Write a message to client",
 					"groupChat": "Write message"
+				},
+				"forgotSomething": {
+					"text": "Forgot something? Just send another message?"
 				}
 			},
 			"overlay": {

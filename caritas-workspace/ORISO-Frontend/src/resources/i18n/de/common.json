@@ -434,6 +434,7 @@
 			"is_decrypting": "Datei wird entschlüsselt",
 			"save": "Datei downloaden"
 		},
+		"title": "Die Ende-zu-Ende-Verschlüsselung ist aktiviert",
 		"hint": "Ihre Nachrichten sind Ende-zu-Ende verschlüsselt. Das bedeutet, niemand außerhalb dieses Chats kann die Nachrichten lesen. Nicht einmal die Online-Beratungs-Plattform.",
 		"inProgress": {
 			"confirm": "Bitte warten Sie bis die Verschlüsselung abgeschlossen ist!",
@@ -511,8 +512,12 @@
 				"format": "Text formatieren",
 				"placeholder": {
 					"asker": "Schreiben Sie uns, was Sie bewegt.",
+					"askerAfterFirstMessage": "Etwas vergessen? Senden Sie einfach eine weitere Nachricht.",
 					"consultant": "Nachricht an Klient:in schreiben",
 					"groupChat": "Nachricht schreiben"
+				},
+				"forgotSomething": {
+					"text": "Etwas vergessen? Senden Sie einfach eine weitere Nachricht."
 				}
 			},
 			"overlay": {

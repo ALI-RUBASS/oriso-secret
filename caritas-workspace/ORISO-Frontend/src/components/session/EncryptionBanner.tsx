@@ -14,7 +14,7 @@ export const EncryptionBanner = () => {
 			</div>
 			<div className="encryption-banner__content">
 				<div className="encryption-banner__heading">
-					End-to-end encryption is enabled
+					{translate('e2ee.title', 'End-to-end encryption is enabled')}
 				</div>
 				<div className="encryption-banner__description">
 					{translate('e2ee.hint', 'Messages in this room are end-to-end encrypted. Your messages are secured with locks. Only you and the recipient have the unique keys to unlock them.')}

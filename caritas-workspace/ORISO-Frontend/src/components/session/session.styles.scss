@@ -166,6 +166,17 @@ $session-scroll-to-bottom-radius: $button-border-radius !default;
 			display: flex;
 		}
 	}
+
+	&__forgotSomething {
+		padding: $grid-base-two $grid-base-three;
+		text-align: center;
+		color: $tertiary;
+		margin: $grid-base-two 0;
+		
+		.text {
+			font-style: italic;
+		}
+	}
 }
 
 @keyframes appear-animation {
@@ -193,6 +204,17 @@ $session-scroll-to-bottom-radius: $button-border-radius !default;
 		transform: scale(1);
 	}
 }
+
+@keyframes disappear-animation {
+	0% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
 
 @keyframes disappear-animation {
 	0% {
